@@ -33,7 +33,7 @@
 - 颜色只用 Radix 色阶和 Ant Design 语义 token. 不写自造十六进制色值, 品牌 SVG 的默认值除外
 - 基础字号只使用 12 / 14 / 24px, 边框 `0.5px`, 不加装饰性阴影和动画
 - WebUSB 只在主线程使用. `dumpsys` 逐行解析, ZIP 使用异步流; CPU 时间长的 DeepScan 放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
-- 设备快照, 包清单, 扫描结果和 ADB 私钥统一保存在 OPFS; 主题和侧栏宽度属于 UI 偏好
+- 设备快照, 包清单和扫描结果保存在 OPFS; ADB 私钥保存在 IndexedDB credential store; 主题和侧栏宽度属于 UI 偏好
 - 默认只读. 写操作必须先展示命令和回滚方式, 再由用户确认
 - 这是纯静态应用, 不新增后端、数据库、登录或 API 代理, 除非用户明确批准
 

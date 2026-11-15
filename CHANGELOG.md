@@ -11,7 +11,7 @@
 - DEX URL extraction and NOIR-compatible Rules, Classifier, Exposure, Domains, Advisor and Trackers
 - Audit page with progress, cancel, risk table, evidence details and domain tiers
 - USB disconnect and shell timeout handling with retained progress and reconnect guidance
-- Unified OPFS persistence for ADB keys, device snapshots, package inventories and scan results
+- OPFS persistence for device snapshots, package inventories and scan results
 - Last scan restore on reconnect
 - Real MI 6 dumpsys and AOSP AXML fixtures for parser and interruption tests
 - JSON, Markdown and CSV report export with NOIR-compatible `report.json`
@@ -36,6 +36,7 @@
 
 ### Changed
 
+- ADB private keys use the IndexedDB credential store again; any legacy OPFS key is removed on the next connection
 - Theme-aware brand mark in the sidebar
 - Sidebar supports drag and keyboard resize, with persisted width and a rounded collapse control
 - Removed static explanatory copy from the connect, apps and roadmap pages
@@ -43,5 +44,5 @@
 
 ### Not yet
 
-- HTML report export, report import/diff and IndexedDB AppFacts cache
+- HTML report export, report import/diff and OPFS AppFacts cache
 - appops apply/rollback and DeepScan

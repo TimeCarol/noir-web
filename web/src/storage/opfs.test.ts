@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { DeviceInfo, PackageEntry } from '../adb/types';
 import type { ScanResult } from '../core/models';
 import { loadDeviceInfo, loadPackages, loadScan, saveDeviceInfo, savePackages, saveScan } from './device-store';
-import { readBytes, readJson, serialSegment, writeBytes, writeJson } from './opfs';
+import { readBytes, readJson, removeFile, serialSegment, writeBytes, writeJson } from './opfs';
 
 /** MemFile 是带文本和二进制视图的内存文件 */
 class MemFile {
@@ -125,6 +125,12 @@ describe('opfs', () => {
     await expect(readJson(['test', 'value.json'])).resolves.toEqual({ ok: true });
     expect(await writeBytes(['test', 'value.bin'], new Uint8Array([1, 2, 3]))).toBe(true);
     await expect(readBytes(['test', 'value.bin'])).resolves.toEqual(new Uint8Array([1, 2, 3]));
+  });
+
+  it('删除旧文件后读取返回空值', async () => {
+    await writeJson(['legacy', 'key.json'], { old: true });
+    expect(await removeFile(['legacy', 'key.json'])).toBe(true);
+    await expect(readJson(['legacy', 'key.json'])).resolves.toBeNull();
   });
 
   it('设备序列号被编码为单一路径段', () => {

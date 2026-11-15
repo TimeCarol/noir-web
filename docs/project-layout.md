@@ -69,7 +69,6 @@ noir-web/
         │   ├── manifest.ts      # Manifest 事实
         │   └── remote-zip.ts    # tail/head ZIP 读取
         ├── storage/
-        │   ├── adb-credentials.ts # OPFS ADB 私钥
         │   ├── device-cache.ts    # 读取并写入设备快照
         │   ├── device-store.ts    # 设备/包/扫描结果
         │   └── opfs.ts            # OPFS JSON 和二进制读写
