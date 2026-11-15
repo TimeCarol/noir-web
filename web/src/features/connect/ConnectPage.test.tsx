@@ -5,7 +5,7 @@
  * 约束: 使用合成设备和失败对象, 不触发真实 WebUSB
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.1
+ * 版本: v1.2
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -70,6 +70,7 @@ describe('ConnectPage', () => {
     expect(screen.getByText('SERIAL-1')).toBeInTheDocument();
     expect(screen.getByText('14 (SDK 34)')).toBeInTheDocument();
     expect(screen.getByText('2 个')).toBeInTheDocument();
+    expect(screen.getByText(info.fingerprint)).toBeInTheDocument();
   });
 
   it('连接失败时显示可执行步骤和命令', () => {

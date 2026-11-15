@@ -5,7 +5,7 @@
  * 约束: 连接只读取设备属性和包列表, 不执行任何写操作
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.3
+ * 版本: v1.4
  */
 import { Alert, Button, Card, Space, Steps, Tag, Typography } from 'antd';
 import { ReloadOutlined, UsbOutlined } from '@ant-design/icons';
@@ -94,40 +94,38 @@ export default function ConnectPage() {
           />
         )}
 
-        <div className="connect-layout">
-          <section className="connect-panel" aria-label="连接步骤">
-            <Steps current={currentStep} status={failure ? 'error' : undefined} items={steps} />
-            <Space wrap>
-              <Button
-                type="primary"
-                size="large"
-                icon={<UsbOutlined />}
-                loading={busy}
-                disabled={!supported}
-                onClick={() => void handleConnect()}
-              >
-                {device ? '重新选择设备' : busy ? '等待手机授权' : '选择设备'}
-              </Button>
-              {device && (
-                <>
-                  <Button icon={<ReloadOutlined />} onClick={() => { void infoQuery.refetch(); void packagesQuery.refetch(); }}>
-                    重新读取
-                  </Button>
-                  <Button onClick={disconnect}>断开连接</Button>
-                </>
-              )}
-            </Space>
-          </section>
-
-          <DeviceSummary
-            deviceName={device?.name ?? ''}
-            serial={device?.serial ?? ''}
-            info={infoQuery.data}
-            packageCount={packagesQuery.data?.length}
-            loading={Boolean(device) && (infoQuery.isPending || packagesQuery.isPending)}
-          />
-        </div>
+        <section className="connect-panel" aria-label="连接步骤">
+          <Steps current={currentStep} status={failure ? 'error' : undefined} items={steps} />
+          <Space wrap>
+            <Button
+              type="primary"
+              size="large"
+              icon={<UsbOutlined />}
+              loading={busy}
+              disabled={!supported}
+              onClick={() => void handleConnect()}
+            >
+              {device ? '重新选择设备' : busy ? '等待手机授权' : '选择设备'}
+            </Button>
+            {device && (
+              <>
+                <Button icon={<ReloadOutlined />} onClick={() => { void infoQuery.refetch(); void packagesQuery.refetch(); }}>
+                  重新读取
+                </Button>
+                <Button onClick={disconnect}>断开连接</Button>
+              </>
+            )}
+          </Space>
+        </section>
       </Card>
+
+      <DeviceSummary
+        deviceName={device?.name ?? ''}
+        serial={device?.serial ?? ''}
+        info={infoQuery.data}
+        packageCount={packagesQuery.data?.length}
+        loading={Boolean(device) && (infoQuery.isPending || packagesQuery.isPending)}
+      />
     </div>
   );
 }
