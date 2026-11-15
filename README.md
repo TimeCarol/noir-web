@@ -9,7 +9,7 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 ## What works now
 
 - Chrome / Edge / Opera desktop connects to an Android device over WebUSB.
-- First connection generates an ADB RSA key in the browser and stores it in IndexedDB.
+- First connection generates an ADB RSA key in the browser and stores it in OPFS.
 - Device info: manufacturer, model, Android version, SDK, build, ABI, fingerprint.
 - Base APK inventory: package name and APK path from `pm list packages -f`.
 - Candidate filtering by `INTERNET` plus at least one granted sensitive permission.
@@ -18,6 +18,7 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 - AXML parsing for exported components, backup, cleartext traffic, debuggable and target SDK.
 - DEX URL extraction, NOIR-compatible scoring, vendor/category classification, data-flow correlation and recommendations.
 - Audit page with scan progress, cancel, filters, evidence details, DNS domain tiers and JSON/Markdown/CSV export.
+- Device snapshots, package inventories and scan results persist in OPFS and the last scan is restored on reconnect.
 - USB disconnect and shell timeout detection: the scan aborts, keeps its last progress count and links back to reconnect instead of spinning indefinitely.
 - Client-side search and pagination.
 - Draggable, persisted sidebar width and a rounded collapse control.
@@ -30,7 +31,7 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 ## What is not implemented yet
 
 - DeepScan signals and the optional `dex-decompiler` WASM mode
-- HTML report export, report import/diff and the IndexedDB AppFacts cache
+- HTML report export, report import/diff and the OPFS AppFacts cache
 - appops preview, apply and rollback
 - Windows WinUSB and Linux udev acceptance matrices
 
@@ -82,13 +83,13 @@ Deploy `web/dist` behind nginx, GitHub Pages or Cloudflare Pages. HTTPS is requi
 
 ## Privacy
 
-All device data stays in the browser. There is no backend, telemetry, remote font, third-party script or upload path. Reports are generated locally. ADB private keys live in IndexedDB scoped to the site origin. Clearing site data removes them and requires re-authorization.
+All device data stays in the browser. There is no backend, telemetry, remote font, third-party script or upload path. Reports are generated locally. Device snapshots, package inventories, scan results and the ADB private key live in OPFS scoped to the site origin. Clearing site data removes them and requires re-authorization. UI preferences such as theme and sidebar width remain small local settings.
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 63 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 71 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
-The production bundle is 398 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
+The production bundle is 399 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
 
 Chrome DevTools checks on the dev and production builds:
 

@@ -5,7 +5,7 @@
  * 约束: 扫描只在用户点击后开始, 取消时立即中止 ADB 流
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.1
+ * 版本: v1.2
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -33,8 +33,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAdb } from '../../app/adb-context';
 import { RouteSkeleton } from '../../components/RouteSkeleton';
-import { readDeviceInfo } from '../../adb/device';
-import { listPackages } from '../../adb/packages';
+import { readAndStoreDeviceInfo, readAndStorePackages } from '../../storage/device-cache';
+import { loadScan, saveScan } from '../../storage/device-store';
 import { adbShell, DeviceDisconnectedError, isShellInterruption } from '../../adb/shell';
 import { downloadText } from '../../lib/download';
 import { errorText } from '../../lib/errors';
@@ -75,6 +75,7 @@ export default function AuditPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [connectionLost, setConnectionLost] = useState(false);
+  const [restored, setRestored] = useState(false);
   const [minScore, setMinScore] = useState(0);
   const [search, setSearch] = useState('');
   const controllerRef = useRef<AbortController | null>(null);
@@ -82,14 +83,14 @@ export default function AuditPage() {
 
   const infoQuery = useQuery({
     queryKey: ['device-info', device?.serial],
-    queryFn: () => readDeviceInfo(device!.adb),
+    queryFn: () => readAndStoreDeviceInfo(device!.adb, device!.serial),
     enabled: Boolean(device),
     staleTime: Infinity,
     retry: false,
   });
   const packagesQuery = useQuery({
     queryKey: ['packages', device?.serial],
-    queryFn: () => listPackages(device!.adb),
+    queryFn: () => readAndStorePackages(device!.adb, device!.serial),
     enabled: Boolean(device),
     staleTime: Infinity,
     retry: false,
@@ -121,6 +122,18 @@ export default function AuditPage() {
   const ready = Boolean(device && infoQuery.data && packagesQuery.data) && !running;
   const endpointCount = result?.apps.reduce((sum, app) => sum + app.endpoints.length, 0) ?? 0;
 
+  useEffect(() => {
+    if (!device || result || running) return;
+    let active = true;
+    void loadScan(device.serial).then(scan => {
+      if (!active || !scan) return;
+      setResult(scan);
+      setRestored(true);
+      setStatus('done');
+    });
+    return () => { active = false; };
+  }, [device, result, running]);
+
   async function startScan() {
     if (!device || !infoQuery.data || !packagesQuery.data) return;
     controllerRef.current?.abort();
@@ -131,12 +144,14 @@ export default function AuditPage() {
     setError(null);
     setNotice(null);
     setConnectionLost(false);
+    setRestored(false);
     abortReasonRef.current = null;
     setProgress({ phase: 'dumpsys', done: 0, total: 0 });
+    const serial = device.serial;
     try {
       const scan = await scanPackages({
         shell: adbShell(device.adb),
-        serial: device.serial,
+        serial,
         model: infoQuery.data.model,
         product: infoQuery.data.manufacturer,
         info: infoQuery.data,
@@ -149,6 +164,8 @@ export default function AuditPage() {
         onProgress: setProgress,
       });
       if (controllerRef.current !== controller) return;
+      const saved = await saveScan(serial, scan).catch(() => false);
+      if (!saved) setNotice('本地保存不可用, 结果仅在当前页面');
       setResult(scan);
       setStatus('done');
     } catch (scanError) {
@@ -259,7 +276,7 @@ export default function AuditPage() {
     <div className="page-stack">
       <Card
         title="隐私审计"
-        extra={<Space wrap><Tag>{packagesQuery.data.length} 个应用</Tag>{result && <Tag color="blue">{result.apps.length} 个命中</Tag>}</Space>}
+        extra={<Space wrap>{restored && <Tag color="blue">本地</Tag>}<Tag>{packagesQuery.data.length} 个应用</Tag>{result && <Tag color="blue">{result.apps.length} 个命中</Tag>}</Space>}
       >
         <div className="audit-toolbar">
           <Space wrap>

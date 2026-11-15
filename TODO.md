@@ -3,7 +3,7 @@
 ## M0
 
 - [x] WebUSB device picker and ADB authentication
-- [x] IndexedDB ADB key persistence
+- [x] OPFS ADB key persistence
 - [x] Device snapshot from `getprop`
 - [x] Base APK inventory from `pm list packages -f`
 - [x] Connect, apps and roadmap pages
@@ -40,7 +40,8 @@
 - [ ] HTML export
 - [x] DNS tracker, review and functional lists
 - [ ] Import two reports and diff
-- [ ] IndexedDB AppFacts cache with APK path, size and mtime
+- [x] OPFS device snapshots, package inventories and latest scan results
+- [ ] OPFS AppFacts cache with APK path, size and mtime
 
 ## M3
 

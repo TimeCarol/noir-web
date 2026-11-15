@@ -1,16 +1,16 @@
 /**
  * 职责: 建立 WebUSB 到 ADB daemon 的认证连接
  * 导出: hasWebUsb, isSecureContext, requestAdbDevice, authenticateAdbDevice, WebUsbUnsupportedError, InsecureContextError
- * 依赖: Tango / WebCrypto / IndexedDB
- * 约束: requestDevice 必须由用户手势触发, ADB key 只保存在浏览器 IndexedDB
+ * 依赖: Tango / WebCrypto / OPFS
+ * 约束: requestDevice 必须由用户手势触发, ADB key 只保存在浏览器 OPFS
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.1
+ * 版本: v1.2
  */
 import { Adb, AdbDaemonTransport } from '@yume-chan/adb';
 import type { AdbDaemonWebUsbDevice } from '@yume-chan/adb-daemon-webusb';
 import { AdbDaemonWebUsbDeviceManager } from '@yume-chan/adb-daemon-webusb';
-import AdbWebCredentialStore from '@yume-chan/adb-credential-web';
+import { AdbOpfsCredentialStore } from '../storage/adb-credentials';
 import type { ConnectedDevice } from './types';
 
 /** WebUsbUnsupportedError 表示当前浏览器没有 navigator.usb, 不是设备故障 */
@@ -59,7 +59,7 @@ export async function requestAdbDevice(): Promise<AdbDaemonWebUsbDevice | undefi
 export async function authenticateAdbDevice(device: AdbDaemonWebUsbDevice): Promise<ConnectedDevice> {
   const connection = await device.connect();
   try {
-    const credentialStore = new AdbWebCredentialStore('NOIR Web');
+    const credentialStore = new AdbOpfsCredentialStore('NOIR Web');
     const transport = await AdbDaemonTransport.authenticate({
       serial: device.serial || 'android',
       connection,

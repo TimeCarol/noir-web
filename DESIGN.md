@@ -65,7 +65,7 @@ Tango（`ya-webadb`）已经把这些全部实现并开源：
 
 - `@yume-chan/adb`：ADB 协议、认证、shell、sync、subprocess。
 - `@yume-chan/adb-daemon-webusb`：WebUSB 传输层。
-- `@yume-chan/adb-credential-web`：WebCrypto 生成 RSA key，IndexedDB 保存。
+- WebCrypto 生成 RSA key，OPFS 保存。
 - `@yume-chan/android-bin`：`pm`、`dumpsys` 等封装（可选）。
 
 ### 3.2 浏览器兼容性
@@ -177,7 +177,7 @@ adb kill-server
 │   ├─ Rules engine (score/classify/exposure/advisor)         │
 │   └─ Report generator (JSON/MD/HTML/CSV)                    │
 │                                                             │
-│  IndexedDB                                                  │
+│  OPFS                                                  │
 │   ├─ ADB RSA key (Tango credential store)                   │
 │   ├─ scan cache (per device/pkg/apk)                        │
 │   ├─ scan history / imported reports                        │
@@ -240,7 +240,7 @@ src/adb/
 ```ts
 import { Adb, AdbDaemonTransport } from "@yume-chan/adb";
 import { AdbDaemonWebUsbDeviceManager } from "@yume-chan/adb-daemon-webusb";
-import AdbWebCredentialStore from "@yume-chan/adb-credential-web";
+import { AdbOpfsCredentialStore } from "../storage/adb-credentials";
 
 export async function connectDevice() {
   const manager = AdbDaemonWebUsbDeviceManager.BROWSER;
@@ -251,7 +251,7 @@ export async function connectDevice() {
   if (!device) return undefined;
 
   const connection = await device.connect(); // DeviceBusyError 在这里
-  const credentialStore = new AdbWebCredentialStore("NOIR Web");
+  const credentialStore = new AdbOpfsCredentialStore("NOIR Web");
   const transport = await AdbDaemonTransport.authenticate({
     serial: device.serial,
     connection,
@@ -262,7 +262,7 @@ export async function connectDevice() {
 }
 ```
 
-第一次连接时手机会弹出“允许 USB 调试吗？”，勾选“一律允许”即可。密钥存在 IndexedDB，换域名/清站点数据后需要重新授权。
+第一次连接时手机会弹出“允许 USB 调试吗？”，勾选“一律允许”即可。密钥存在 OPFS，换域名/清站点数据后需要重新授权。
 
 常用命令：
 
@@ -528,7 +528,7 @@ public/rules/
 
 ### 6.8 缓存
 
-IndexedDB stores：
+OPFS stores：
 
 ```text
 keys        : Tango ADB key（由 credential store 管理）
@@ -629,7 +629,7 @@ settings    : lang, theme, rulesVersion
 | APK ZIP/AXML/DEX 解析 | 浏览器 JS |
 | 规则 | 内置 JSON |
 | 报告 | Blob 下载 |
-| 缓存 | IndexedDB |
+| 缓存 | OPFS |
 | diff | 浏览器 |
 | 隐私承诺 | 无后端更容易证明 |
 
@@ -730,7 +730,7 @@ server {
 
 网页拥有 ADB shell 权限，等同于“这台电脑上的 adb”。因此：
 
-- **最大威胁是 XSS/供应链攻击**：恶意脚本可以读 IndexedDB 里的 ADB 私钥，进而控制手机。
+- **最大威胁是 XSS/供应链攻击**：恶意脚本可以读 OPFS 里的 ADB 私钥，进而控制手机。
 - **其次是钓鱼/仿冒站点**：用户可能把 ADB 授权给假站点。
 - **报告本身是敏感数据**：包名、端点、设备指纹。
 
@@ -740,7 +740,7 @@ server {
 2. **自托管所有资源**：字体、图标、JS、WASM；不用 Google Fonts/CDN。
 3. **无遥测、无错误上报、无广告**。
 4. **依赖锁定 + SRI/构建校验**；发布 GitHub Actions 构建产物。
-5. **ADB key 只存 IndexedDB**，不提供导出；清除站点数据即失效。
+5. **ADB key 只存 OPFS**，不提供导出；清除站点数据即失效。
 6. **写操作二次确认**，默认只读；展示回滚命令。
 7. **报告脱敏选项**：隐藏序列号、fingerprint、包名（可选）。
 8. **明确免责声明**：仅用于自己的设备或已授权设备；静态证据不等于实际传输。
@@ -927,7 +927,7 @@ noir-web/
 | 图表 | 轻量 SVG / CSS bar | 避免重型图表库 |
 | ADB | `@yume-chan/adb@2.6.4` + webusb 2.3.2 + credential-web 2.1.0 | 锁版本, 已验证浏览器 ADB 实现 |
 | 压缩 | `fflate` + `DecompressionStream` | 小、快 |
-| 缓存 | IndexedDB | 大对象、结构化 |
+| 缓存 | OPFS | 大对象、结构化 |
 | 测试 | Vitest 5 + Testing Library | 单元和组件测试 |
 | 校验 | `tsc`, `check-antd-entry.mjs`, production build | 类型、导入边界和构建 |
 | 部署 | nginx / GitHub Pages / Cloudflare Pages | 纯静态 |

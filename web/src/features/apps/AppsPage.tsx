@@ -14,7 +14,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAdb } from '../../app/adb-context';
-import { listPackages } from '../../adb/packages';
+import { readAndStorePackages } from '../../storage/device-cache';
 import type { PackageEntry } from '../../adb/types';
 import { errorText } from '../../lib/errors';
 
@@ -44,7 +44,7 @@ export default function AppsPage() {
   const [search, setSearch] = useState('');
   const query = useQuery({
     queryKey: ['packages', device?.serial],
-    queryFn: () => listPackages(device!.adb),
+    queryFn: () => readAndStorePackages(device!.adb, device!.serial),
     enabled: Boolean(device),
     staleTime: Infinity,
     retry: false,

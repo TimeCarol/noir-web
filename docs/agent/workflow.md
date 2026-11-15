@@ -73,11 +73,13 @@
 
 已运行:
 
-- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 63 项组件/单元测试, production build, gzip/brotli 预压缩, 398 KiB gzip (预算 400 KiB)
+- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 71 项组件/单元测试, production build, gzip/brotli 预压缩, 399 KiB gzip (预算 400 KiB)
 - `bash scripts/test.sh viewports`: 39 个视口通过, 离线重载和 3G 弱网首屏通过
 - 真机 WebUSB 全量审计: Xiaomi MI 6, Android 14, SDK 34, Chrome 157 / macOS; 352 个包, 161 个候选应用, 11,701 个端点, 44 条建议; 全量扫描约 8 分钟
 - 真机 UI: 审计进度, 取消, 应用详情展开, 处置建议, 域名三档和报告导出按钮可用; 修复设备端脚本包名变量后, 进度按包递增; 161 个应用的 Manifest 由真机 base64 传输后解析
 - 同一 `scanPackages` 代码路径经 adb 定向扫描一个系统浏览器应用: 端点和 Manifest 组件均非空; 用于在浏览器自动化无法弹出 USB 选择器时验证解析链路
+- OPFS 真实浏览器验证: 在 127.0.0.1 Chrome 中写入并读取 JSON/设备扫描记录, 清理探针目录; `navigator.storage.getDirectory()` 可用
+- ADB 私钥测试: 生成 PKCS#8 并写入 OPFS, 读取已有 key, OPFS 写入失败时拒绝使用不可持久化的 key
 - 真实数据测试: MI 6 裁剪 dumpsys 样本验证共享 UID 和权限隔离, 公开 AOSP Tag 系统 APK 的 7052 字节 Manifest 验证 AXML
 - 合成测试覆盖: dumpsys 重复块和共享 UID, 合成 AXML, DEX URL, 远程 ZIP 中央目录, 候选过滤, 评分, 报告 JSON/Markdown/CSV 和域名分档
 - USB 中断测试: exec/stream 在 disconnect promise 或空闲超时后立即拒绝, 扫描保留最后进度, 页面显示重新连接
