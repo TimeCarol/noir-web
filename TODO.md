@@ -3,7 +3,7 @@
 ## M0
 
 - [x] WebUSB device picker and ADB authentication
-- [x] OPFS ADB key persistence
+- [x] IndexedDB ADB key persistence
 - [x] Device snapshot from `getprop`
 - [x] Base APK inventory from `pm list packages -f`
 - [x] Connect, apps and roadmap pages

@@ -1,16 +1,17 @@
 /**
  * 职责: 建立 WebUSB 到 ADB daemon 的认证连接
  * 导出: hasWebUsb, isSecureContext, requestAdbDevice, authenticateAdbDevice, WebUsbUnsupportedError, InsecureContextError
- * 依赖: Tango / WebCrypto / OPFS
- * 约束: requestDevice 必须由用户手势触发, ADB key 只保存在浏览器 OPFS
+ * 依赖: Tango / WebCrypto / IndexedDB
+ * 约束: requestDevice 必须由用户手势触发, ADB key 只保存在浏览器 IndexedDB
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.2
+ * 版本: v1.4
  */
 import { Adb, AdbDaemonTransport } from '@yume-chan/adb';
 import type { AdbDaemonWebUsbDevice } from '@yume-chan/adb-daemon-webusb';
 import { AdbDaemonWebUsbDeviceManager } from '@yume-chan/adb-daemon-webusb';
-import { AdbOpfsCredentialStore } from '../storage/adb-credentials';
+import AdbWebCredentialStore from '@yume-chan/adb-credential-web';
+import { removeFile } from '../storage/opfs';
 import type { ConnectedDevice } from './types';
 
 /** WebUsbUnsupportedError 表示当前浏览器没有 navigator.usb, 不是设备故障 */
@@ -59,7 +60,8 @@ export async function requestAdbDevice(): Promise<AdbDaemonWebUsbDevice | undefi
 export async function authenticateAdbDevice(device: AdbDaemonWebUsbDevice): Promise<ConnectedDevice> {
   const connection = await device.connect();
   try {
-    const credentialStore = new AdbOpfsCredentialStore('NOIR Web');
+    await cleanupLegacyOpfsKey();
+    const credentialStore = new AdbWebCredentialStore('NOIR Web');
     const transport = await AdbDaemonTransport.authenticate({
       serial: device.serial || 'android',
       connection,
@@ -77,4 +79,13 @@ export async function authenticateAdbDevice(device: AdbDaemonWebUsbDevice): Prom
     await device.raw.close().catch(() => undefined);
     throw error;
   }
+}
+
+let legacyOpfsKeyChecked = false;
+
+/** cleanupLegacyOpfsKey 删除旧版误存到 OPFS 的 ADB 私钥 */
+async function cleanupLegacyOpfsKey(): Promise<void> {
+  if (legacyOpfsKeyChecked) return;
+  legacyOpfsKeyChecked = true;
+  await removeFile(['adb', 'key.pk8']).catch(() => false);
 }

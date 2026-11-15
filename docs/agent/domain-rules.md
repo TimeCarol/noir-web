@@ -6,7 +6,7 @@
 
 - 浏览器直接说 ADB 协议, 不启动本地 `adb` server, 不依赖 Android SDK. 传输层固定使用 Tango `@yume-chan/adb` 2.6.x
 - `requestDevice()` 必须由用户点击触发. 页面加载时不能静默扫描 USB 设备
-- ADB RSA key 由 WebCrypto 生成, 只保存在当前 origin 的 OPFS. 不写 IndexedDB, 不写日志, 不提供导出
+- ADB RSA key 由 WebCrypto 生成, 只保存在当前 origin 的 IndexedDB credential store. 不写日志, 不提供导出
 - 设备快照, 包清单和扫描结果统一写入 OPFS; 不使用 IndexedDB 或 localStorage 保存设备数据
 - 第一次连接必须在手机上允许 USB 调试. 密钥被撤销或站点数据被清除后需要重新授权
 - ADB 接口同一时间只能被一个程序占用. `DeviceBusyError` 必须显示 `adb kill-server` 和关闭 Android Studio / scrcpy / 其他标签页的指引

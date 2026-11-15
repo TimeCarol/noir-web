@@ -5,7 +5,7 @@
  * 约束: 只生成展示文案, 不重试, 不隐藏原始错误
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.2
+ * 版本: v1.3
  */
 import { AdbDaemonWebUsbDevice } from '@yume-chan/adb-daemon-webusb';
 import { InsecureContextError, WebUsbUnsupportedError } from './connect';
@@ -17,7 +17,6 @@ export type ConnectionErrorKind =
   | 'busy'
   | 'cancelled'
   | 'permission'
-  | 'storage'
   | 'no-device'
   | 'auth'
   | 'disconnected'
@@ -42,7 +41,6 @@ export function describeConnectionError(error: unknown): ConnectionFailure {
   if (isBusyError(error)) return busyFailure();
   if (isCancelledError(error)) return cancelledFailure();
   if (isPermissionError(error)) return permissionFailure();
-  if (isStorageError(error)) return storageFailure();
   if (isAuthError(error)) return authFailure();
   if (isDisconnectedError(error)) return disconnectedFailure();
   if (isNoDeviceError(error)) return noDeviceFailure();
@@ -105,15 +103,6 @@ function permissionFailure(): ConnectionFailure {
   };
 }
 
-function storageFailure(): ConnectionFailure {
-  return {
-    kind: 'storage',
-    title: '浏览器本地存储不可用',
-    description: 'OPFS 无法保存 ADB 私钥和设备数据, 连接不能完成',
-    steps: ['确认页面使用 HTTPS 或 localhost', '允许浏览器为当前站点保存数据', '退出无痕模式后重新打开页面'],
-  };
-}
-
 function noDeviceFailure(): ConnectionFailure {
   return {
     kind: 'no-device',
@@ -171,11 +160,6 @@ function isAuthError(error: unknown): boolean {
 function isDisconnectedError(error: unknown): boolean {
   const message = errorMessage(error).toLowerCase();
   return message.includes('disconnected') || message.includes('device offline') || message.includes('socket closed');
-}
-
-function isStorageError(error: unknown): boolean {
-  const message = errorMessage(error).toLowerCase();
-  return message.includes('opfs') || message.includes('storage') || message.includes('quota');
 }
 
 function isNoDeviceError(error: unknown): boolean {

@@ -65,7 +65,7 @@ Tango（`ya-webadb`）已经把这些全部实现并开源：
 
 - `@yume-chan/adb`：ADB 协议、认证、shell、sync、subprocess。
 - `@yume-chan/adb-daemon-webusb`：WebUSB 传输层。
-- WebCrypto 生成 RSA key，OPFS 保存。
+- WebCrypto 生成 RSA key，IndexedDB 保存。
 - `@yume-chan/android-bin`：`pm`、`dumpsys` 等封装（可选）。
 
 ### 3.2 浏览器兼容性
@@ -177,8 +177,8 @@ adb kill-server
 │   ├─ Rules engine (score/classify/exposure/advisor)         │
 │   └─ Report generator (JSON/MD/HTML/CSV)                    │
 │                                                             │
-│  OPFS                                                  │
-│   ├─ ADB RSA key (Tango credential store)                   │
+│  OPFS + IndexedDB                                          │
+│   ├─ IndexedDB: ADB RSA key (Tango credential store)        │
 │   ├─ scan cache (per device/pkg/apk)                        │
 │   ├─ scan history / imported reports                        │
 │   └─ settings (lang/theme/rules version)                    │
@@ -262,7 +262,7 @@ export async function connectDevice() {
 }
 ```
 
-第一次连接时手机会弹出“允许 USB 调试吗？”，勾选“一律允许”即可。密钥存在 OPFS，换域名/清站点数据后需要重新授权。
+第一次连接时手机会弹出“允许 USB 调试吗？”，勾选“一律允许”即可。密钥存在 IndexedDB，换域名/清站点数据后需要重新授权。
 
 常用命令：
 
@@ -531,12 +531,13 @@ public/rules/
 OPFS stores：
 
 ```text
-keys        : Tango ADB key（由 credential store 管理）
 facts       : key = serial|fingerprint|sdk|pkg|apkPath|apkSize|apkMtime
               value = { endpoints, permissions, manifest, sharedUid, ... }
 scans       : id, deviceSerial, createdAt, options, reportJson
 settings    : lang, theme, rulesVersion
 ```
+
+IndexedDB stores the Tango ADB key through `@yume-chan/adb-credential-web`.
 
 缓存策略：
 
@@ -730,7 +731,7 @@ server {
 
 网页拥有 ADB shell 权限，等同于“这台电脑上的 adb”。因此：
 
-- **最大威胁是 XSS/供应链攻击**：恶意脚本可以读 OPFS 里的 ADB 私钥，进而控制手机。
+- **最大威胁是 XSS/供应链攻击**：恶意脚本可以读 IndexedDB 里的 ADB 私钥，进而控制手机。
 - **其次是钓鱼/仿冒站点**：用户可能把 ADB 授权给假站点。
 - **报告本身是敏感数据**：包名、端点、设备指纹。
 
@@ -740,7 +741,7 @@ server {
 2. **自托管所有资源**：字体、图标、JS、WASM；不用 Google Fonts/CDN。
 3. **无遥测、无错误上报、无广告**。
 4. **依赖锁定 + SRI/构建校验**；发布 GitHub Actions 构建产物。
-5. **ADB key 只存 OPFS**，不提供导出；清除站点数据即失效。
+5. **ADB key 只存 IndexedDB**，不提供导出；清除站点数据即失效。
 6. **写操作二次确认**，默认只读；展示回滚命令。
 7. **报告脱敏选项**：隐藏序列号、fingerprint、包名（可选）。
 8. **明确免责声明**：仅用于自己的设备或已授权设备；静态证据不等于实际传输。

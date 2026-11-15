@@ -9,7 +9,7 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 ## What works now
 
 - Chrome / Edge / Opera desktop connects to an Android device over WebUSB.
-- First connection generates an ADB RSA key in the browser and stores it in OPFS.
+- First connection generates an ADB RSA key in the browser and stores it in IndexedDB.
 - Device info: manufacturer, model, Android version, SDK, build, ABI, fingerprint.
 - Base APK inventory: package name and APK path from `pm list packages -f`.
 - Candidate filtering by `INTERNET` plus at least one granted sensitive permission.
@@ -83,11 +83,11 @@ Deploy `web/dist` behind nginx, GitHub Pages or Cloudflare Pages. HTTPS is requi
 
 ## Privacy
 
-All device data stays in the browser. There is no backend, telemetry, remote font, third-party script or upload path. Reports are generated locally. Device snapshots, package inventories, scan results and the ADB private key live in OPFS scoped to the site origin. Clearing site data removes them and requires re-authorization. UI preferences such as theme and sidebar width remain small local settings.
+All device data stays in the browser. There is no backend, telemetry, remote font, third-party script or upload path. Reports are generated locally. Device snapshots, package inventories and scan results live in OPFS scoped to the site origin. The ADB private key stays in the browser IndexedDB credential store. Clearing site data removes both and requires re-authorization. UI preferences such as theme and sidebar width remain small local settings.
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 71 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 69 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
 The production bundle is 399 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
 

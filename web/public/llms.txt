@@ -9,7 +9,7 @@ NOIR Web is an unofficial browser-based Android privacy audit. It connects to an
 
 ## Privacy
 
-All device data and the ADB key stay in the browser OPFS. There is no backend, telemetry or upload path.
+Device data stays in the browser OPFS; the ADB key stays in IndexedDB. There is no backend, telemetry or upload path.
 
 ## Links
 

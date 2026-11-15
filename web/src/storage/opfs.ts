@@ -1,6 +1,6 @@
 /**
  * 职责: 统一封装 Origin Private File System 的读写, 目录和文件枚举
- * 导出: opfsAvailable, serialSegment, readJson, writeJson, readBytes, writeBytes
+ * 导出: opfsAvailable, serialSegment, readJson, writeJson, readBytes, writeBytes, removeFile
  * 依赖: File System Access API
  * 约束: OPFS 不可用时返回空结果或 false, 不阻断设备扫描
  * 作者: timecarol
@@ -128,6 +128,22 @@ export async function writeBytes(segments: readonly string[], value: Uint8Array)
     return true;
   } catch {
     await writable?.abort().catch(() => undefined);
+    return false;
+  }
+}
+
+/** removeFile 删除文件, 不存在时返回 false
+ * @param segments 从 noir 根目录开始的目录和文件名
+ * @returns 删除成功返回 true
+ */
+export async function removeFile(segments: readonly string[]): Promise<boolean> {
+  if (segments.length === 0) return false;
+  const directory = await directoryFor(segments.slice(0, -1), false);
+  if (!directory) return false;
+  try {
+    await directory.removeEntry(segments[segments.length - 1]);
+    return true;
+  } catch {
     return false;
   }
 }
