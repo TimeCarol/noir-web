@@ -14,6 +14,7 @@
 - WebUSB 只在主线程使用. `dumpsys` 逐行解析, ZIP 使用异步流, 单包解析不进入 UI 状态; CPU 时间长的 DeepScan 放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
 - 默认只读. `appops set`, `pm uninstall`, `pm revoke` 都必须先展示命令和回滚方式, 再由用户确认. 不自动卸载
 - `dumpsys package` 可能很大, 必须流式读取和解析, 不把完整输出拼成一个巨大字符串
+- USB 断开或 shell 超时必须终止扫描并给出重新连接入口, 不能让页面停在进度条上; 不自动重试不可恢复的 ADB transport 中断
 - split APK 和 `pm path` 的多路径在 M1 处理, M0 只读 `pm list packages -f` 的基础 APK
 
 ## 隐私与数据

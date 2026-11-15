@@ -29,6 +29,7 @@
 - [x] Extract URLs from DEX bytes
 - [x] Port Rules, Classifier, Exposure and Domains
 - [x] Keep `report.json` compatible with NOIR
+- [x] Abort scans on USB disconnect or command timeout with reconnect guidance
 
 ## M2
 

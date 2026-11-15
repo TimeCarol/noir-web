@@ -56,6 +56,7 @@ noir-web/
         │   ├── connect.ts       # WebUSB 授权和 ADB 认证
         │   ├── device.ts        # getprop 设备快照
         │   ├── dumpsys.ts       # 流式权限和共享 UID 解析
+        │   ├── fixtures/        # 真实设备 dumpsys 裁剪样本
         │   ├── device-scan.ts   # 设备端 APK 扫描和远程 ZIP 回退
         │   ├── errors.ts        # 连接失败指引
         │   ├── packages.ts      # pm list packages -f
@@ -63,6 +64,7 @@ noir-web/
         │   └── types.ts         # 连接、设备、包数据边界
         ├── apk/
         │   ├── axml.ts          # Android 二进制 XML
+        │   ├── fixtures/        # 公开系统 APK 的 AXML 样本
         │   ├── dex.ts           # DEX URL 提取
         │   ├── manifest.ts      # Manifest 事实
         │   └── remote-zip.ts    # tail/head ZIP 读取

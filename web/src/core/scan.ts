@@ -8,7 +8,7 @@
  * 版本: v1.1
  */
 import type { DeviceInfo, PackageEntry } from '../adb/types';
-import type { Shell } from '../adb/shell';
+import { DeviceDisconnectedError, ShellTimeoutError, type Shell } from '../adb/shell';
 import { DumpsysParser, isDebuggableMeta, isSystemMeta, type PkgMeta } from '../adb/dumpsys';
 import { scanDeviceUrls } from '../adb/device-scan';
 import { advise } from './advisor';
@@ -75,6 +75,7 @@ export async function scanPackages(input: ScanInput, options: ScanOptions = {}):
   try {
     await input.shell.stream('dumpsys package', line => parser.push(line), options.signal);
   } catch (error) {
+    if (error instanceof DeviceDisconnectedError || error instanceof ShellTimeoutError) throw error;
     throw new ScanError(`读取 dumpsys package 失败: ${error instanceof Error ? error.message : String(error)}`);
   }
   const meta = parser.finish();

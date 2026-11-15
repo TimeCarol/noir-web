@@ -5,7 +5,7 @@
  * 约束: 扫描只在用户点击后开始, 取消时立即中止 ADB 流
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.0
+ * 版本: v1.1
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -17,7 +17,6 @@ import {
   Result,
   Select,
   Space,
-  Statistic,
   Table,
   Tag,
   Typography,
@@ -36,7 +35,7 @@ import { useAdb } from '../../app/adb-context';
 import { RouteSkeleton } from '../../components/RouteSkeleton';
 import { readDeviceInfo } from '../../adb/device';
 import { listPackages } from '../../adb/packages';
-import { adbShell } from '../../adb/shell';
+import { adbShell, DeviceDisconnectedError, isShellInterruption } from '../../adb/shell';
 import { downloadText } from '../../lib/download';
 import { errorText } from '../../lib/errors';
 import {
@@ -75,9 +74,11 @@ export default function AuditPage() {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [connectionLost, setConnectionLost] = useState(false);
   const [minScore, setMinScore] = useState(0);
   const [search, setSearch] = useState('');
   const controllerRef = useRef<AbortController | null>(null);
+  const abortReasonRef = useRef<'user' | 'connection' | null>(null);
 
   const infoQuery = useQuery({
     queryKey: ['device-info', device?.serial],
@@ -95,6 +96,15 @@ export default function AuditPage() {
   });
 
   useEffect(() => () => controllerRef.current?.abort(), []);
+
+  useEffect(() => {
+    if (device || status !== 'running') return;
+    abortReasonRef.current = 'connection';
+    controllerRef.current?.abort();
+    setStatus('error');
+    setConnectionLost(true);
+    setError('USB 连接已中断, 请重新连接设备后重试');
+  }, [device, status]);
 
   const rows = useMemo(() => {
     if (!result) return [];
@@ -120,6 +130,8 @@ export default function AuditPage() {
     setResult(null);
     setError(null);
     setNotice(null);
+    setConnectionLost(false);
+    abortReasonRef.current = null;
     setProgress({ phase: 'dumpsys', done: 0, total: 0 });
     try {
       const scan = await scanPackages({
@@ -136,13 +148,22 @@ export default function AuditPage() {
         signal: controller.signal,
         onProgress: setProgress,
       });
+      if (controllerRef.current !== controller) return;
       setResult(scan);
       setStatus('done');
     } catch (scanError) {
-      if (controller.signal.aborted) {
+      if (controllerRef.current !== controller) return;
+      if (abortReasonRef.current === 'connection' || scanError instanceof DeviceDisconnectedError) {
+        setStatus('error');
+        setConnectionLost(true);
+        setError('USB 连接已中断, 请重新连接设备后重试');
+      } else if (controller.signal.aborted) {
         setStatus('idle');
         setProgress(null);
         setNotice('扫描已停止');
+      } else if (isShellInterruption(scanError)) {
+        setStatus('error');
+        setError(errorText(scanError));
       } else {
         setStatus('error');
         setError(errorText(scanError));
@@ -151,10 +172,30 @@ export default function AuditPage() {
   }
 
   function stopScan() {
+    abortReasonRef.current = 'user';
     controllerRef.current?.abort();
   }
 
-  if (!device) {
+  if (connectionLost || (!device && status === 'error')) {
+    return (
+      <Card title="隐私审计">
+        <Alert
+          type="error"
+          showIcon
+          title="USB 连接已中断"
+          description={(
+            <>
+              <div>{error ?? '扫描已停止, 请重新连接设备后重试'}</div>
+              {progress && progress.total > 0 && <div>已处理 {progress.done}/{progress.total} 个应用</div>}
+            </>
+          )}
+          action={<Link to="/connect"><Button type="primary">重新连接</Button></Link>}
+        />
+      </Card>
+    );
+  }
+
+  if (!device && !result) {
     return (
       <Result
         status="info"
@@ -266,15 +307,15 @@ export default function AuditPage() {
             />
           )}
           <div className="audit-stats" aria-label="扫描摘要">
-            <div className="audit-stat"><Statistic title="扫描包数" value={result.packageCount} /></div>
-            <div className="audit-stat"><Statistic title="命中应用" value={result.apps.length} /></div>
-            <div className="audit-stat"><Statistic title="端点" value={endpointCount} /></div>
-            <div className="audit-stat"><Statistic title="建议" value={result.recommendations.length} /></div>
+            <div className="audit-stat"><span className="audit-stat-label">扫描包数</span><span className="audit-stat-value">{result.packageCount.toLocaleString('zh-CN')}</span></div>
+            <div className="audit-stat"><span className="audit-stat-label">命中应用</span><span className="audit-stat-value">{result.apps.length.toLocaleString('zh-CN')}</span></div>
+            <div className="audit-stat"><span className="audit-stat-label">端点</span><span className="audit-stat-value">{endpointCount.toLocaleString('zh-CN')}</span></div>
+            <div className="audit-stat"><span className="audit-stat-label">建议</span><span className="audit-stat-value">{result.recommendations.length.toLocaleString('zh-CN')}</span></div>
           </div>
 
           <Card
             title="处置建议"
-            extra={<Typography.Text type="secondary">设备 {device.name || device.serial}</Typography.Text>}
+            extra={<Typography.Text type="secondary">设备 {device?.name || device?.serial || '已断开'}</Typography.Text>}
           >
             <Table<Recommendation>
               rowKey={item => `${item.pkg}|${item.action}`}

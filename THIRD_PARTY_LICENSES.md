@@ -25,6 +25,8 @@ NOIR Web is an unofficial web port. It is not affiliated with Verlintas.
 | [ADB Auditor](https://github.com/thecybersandeep/adbauditor) | CC BY-NC-ND 4.0 | Reference only, no code copied |
 | [APK Auditor](https://github.com/thecybersandeep/apkauditor) | CC BY-NC-ND 4.0 | Reference only, no code copied |
 
+Test fixtures include a 7 KB AndroidManifest.xml from the AOSP Tag application (Apache-2.0) and a redacted `dumpsys package` excerpt from a Xiaomi MI 6. The excerpt contains only public system package names and permission lines; it has no serial number, account, endpoint or ADB key.
+
 CC BY-NC-ND projects cannot be copied, modified or redistributed. They are listed only as prior art.
 
 ## Fonts

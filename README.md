@@ -18,6 +18,7 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 - AXML parsing for exported components, backup, cleartext traffic, debuggable and target SDK.
 - DEX URL extraction, NOIR-compatible scoring, vendor/category classification, data-flow correlation and recommendations.
 - Audit page with scan progress, cancel, filters, evidence details, DNS domain tiers and JSON/Markdown/CSV export.
+- USB disconnect and shell timeout detection: the scan aborts, keeps its last progress count and links back to reconnect instead of spinning indefinitely.
 - Client-side search and pagination.
 - Draggable, persisted sidebar width and a rounded collapse control.
 - Minimal interface that uses layout and status instead of explanatory copy.
@@ -85,9 +86,9 @@ All device data stays in the browser. There is no backend, telemetry, remote fon
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 49 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 63 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
-The production bundle is 399 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
+The production bundle is 398 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
 
 Chrome DevTools checks on the dev and production builds:
 

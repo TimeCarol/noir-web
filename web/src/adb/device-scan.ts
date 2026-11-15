@@ -9,7 +9,7 @@
  */
 // oxlint-disable no-await-in-loop -- ADB 命令和流式读取必须顺序执行
 import type { PackageEntry } from './types';
-import type { Shell } from './shell';
+import { isShellInterruption, type Shell } from './shell';
 import { quote, listZipEntries, readZipEntry } from '../apk/remote-zip';
 import { analyzeManifest, type ManifestFacts } from '../apk/manifest';
 import { urlsFromDex, URL_LIMIT } from '../apk/dex';
@@ -54,7 +54,8 @@ export async function readPackagePaths(shell: Shell, packageName: string, fallba
       .map(line => line.slice('package:'.length).trim())
       .filter(Boolean);
     return paths.length > 0 ? [...new Set(paths)] : [fallback];
-  } catch {
+  } catch (error) {
+    if (isShellInterruption(error)) throw error;
     return [fallback];
   }
 }
@@ -68,7 +69,8 @@ export async function detectDeviceTools(shell: Shell): Promise<DeviceToolAvailab
     const strings = lines.some(line => line.endsWith('/strings'));
     const base64 = lines.some(line => line.endsWith('/base64'));
     return { unzip, strings, base64, fast: unzip && strings };
-  } catch {
+  } catch (error) {
+    if (isShellInterruption(error)) throw error;
     return { unzip: false, strings: false, base64: false, fast: false };
   }
 }
@@ -222,7 +224,8 @@ export async function scanRemoteUrls(
           }
           for (const url of urlsFromDex([bytes], URL_LIMIT)) found.add(url);
         }
-      } catch {
+      } catch (error) {
+        if (isShellInterruption(error)) throw error;
         complete = false;
       }
     }

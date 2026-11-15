@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import type { ConnectedDevice, DeviceInfo, PackageEntry } from '../../adb/types';
 import type { ScanResult } from '../../core/models';
+import { DeviceDisconnectedError } from '../../adb/shell';
 
 const adbState = vi.hoisted(() => ({ useAdb: vi.fn() }));
 const scanState = vi.hoisted(() => ({ scanPackages: vi.fn() }));
@@ -106,6 +107,16 @@ describe('AuditPage', () => {
     renderPage(null);
     expect(screen.getByText('未连接设备')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '连接设备' })).toBeInTheDocument();
+  });
+
+  it('扫描中 USB 断开时停止并引导重新连接', async () => {
+    scanState.scanPackages.mockRejectedValue(new DeviceDisconnectedError());
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(await screen.findByRole('button', { name: /开始扫描/ }));
+    expect(await screen.findByText('USB 连接已中断')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '重新连接' })).toBeInTheDocument();
   });
 
   it('点击开始扫描后展示摘要, 应用和建议', async () => {
