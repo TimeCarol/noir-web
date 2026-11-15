@@ -4,6 +4,13 @@
 
 ### Added
 
+- Streaming `dumpsys package` parser with shared-UID permission merging
+- Candidate filter for `INTERNET` plus granted sensitive permissions
+- Split APK discovery, device-side `unzip`/`strings` scanning and remote ZIP range fallback
+- AXML parser and Manifest facts for exported components, backup, cleartext, debuggable and target SDK
+- DEX URL extraction and NOIR-compatible Rules, Classifier, Exposure, Domains, Advisor and Trackers
+- Audit page with progress, cancel, risk table, evidence details and domain tiers
+- JSON, Markdown and CSV report export with NOIR-compatible `report.json`
 - GitHub Actions `verify` workflow for master pushes and pull requests
 
 - WebUSB to ADB connection with Tango, browser-generated RSA key and IndexedDB credential store
@@ -32,8 +39,5 @@
 
 ### Not yet
 
-- Permission and endpoint scanning
-- AXML and DEX parsing
-- Risk scoring and reports
-- appops apply/rollback
-- DeepScan and `noir diff`
+- HTML report export, report import/diff and IndexedDB AppFacts cache
+- appops apply/rollback and DeepScan

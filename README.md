@@ -2,7 +2,7 @@
 
 Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an Android privacy audit that runs entirely in the browser over Chrome WebUSB.
 
-> Status: **M0 verified**. WebUSB connection, ADB authorization, device info, base APK inventory and disconnect were verified end-to-end on a Xiaomi MI 6, Android 14, Chrome 157 / macOS. Permission/endpoint scanning, AXML, risk scoring, reports, appops and DeepScan are M1+ work.
+> Status: **M1 verified**. WebUSB connection, ADB authorization, permission/endpoint scanning, AXML manifest facts, risk scoring, recommendations and JSON/Markdown/CSV export were verified end-to-end on a Xiaomi MI 6, Android 14, Chrome 157 / macOS. DeepScan, report diff and appops are M2+ work.
 >
 > This project is not affiliated with Verlintas.
 
@@ -12,6 +12,12 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 - First connection generates an ADB RSA key in the browser and stores it in IndexedDB.
 - Device info: manufacturer, model, Android version, SDK, build, ABI, fingerprint.
 - Base APK inventory: package name and APK path from `pm list packages -f`.
+- Candidate filtering by `INTERNET` plus at least one granted sensitive permission.
+- Streaming `dumpsys package` parsing with duplicate-block and shared-UID merging.
+- Split APK discovery with `pm path`, device-side `unzip`/`strings` URL extraction and a `tail`/`head` remote-ZIP fallback.
+- AXML parsing for exported components, backup, cleartext traffic, debuggable and target SDK.
+- DEX URL extraction, NOIR-compatible scoring, vendor/category classification, data-flow correlation and recommendations.
+- Audit page with scan progress, cancel, filters, evidence details, DNS domain tiers and JSON/Markdown/CSV export.
 - Client-side search and pagination.
 - Draggable, persisted sidebar width and a rounded collapse control.
 - Minimal interface that uses layout and status instead of explanatory copy.
@@ -22,13 +28,10 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 
 ## What is not implemented yet
 
-- `dumpsys package` permission parsing and candidate filtering
-- split APK discovery and remote ZIP range reads
-- AXML manifest parsing
-- DEX URL extraction and DeepScan signals
-- risk scoring, classification, data-flow correlation, shared UID
-- report JSON/MD/HTML/CSV, DNS lists and `noir diff`
-- appops apply and rollback
+- DeepScan signals and the optional `dex-decompiler` WASM mode
+- HTML report export, report import/diff and the IndexedDB AppFacts cache
+- appops preview, apply and rollback
+- Windows WinUSB and Linux udev acceptance matrices
 
 ## Stack
 
@@ -82,14 +85,16 @@ All device data stays in the browser. There is no backend, telemetry, remote fon
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 21 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 49 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
-The production bundle is 374 KiB gzip across JS/CSS/HTML, has no source maps, and ships 22 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
+The production bundle is 399 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
 
 Chrome DevTools checks on the dev and production builds:
 
 - WebUSB connect, ADB authorization, device info, 352-package inventory, search and disconnect on Xiaomi MI 6
-- Navigation across connect, apps and roadmap pages
+- Permission/endpoint audit, app detail expansion and report export on the same device
+- Navigation across connect, apps, audit and roadmap pages
+- Full audit on MI 6: 352 packages, 161 flagged apps, 11,701 endpoints, 44 recommendations
 - Theme system/light/dark cycle with persisted preference
 - Sidebar drag resize, keyboard resize and rounded collapse control at 1440px
 - Copy command feedback

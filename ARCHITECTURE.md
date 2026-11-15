@@ -35,9 +35,9 @@ apk -> core (证据和类型)
 
 - WebUSB 在主线程使用, `requestDevice` 必须由用户手势触发
 - ADB I/O 是异步的, 不阻塞 UI
-- M1 的 `dumpsys` 解析、ZIP inflate、DEX 扫描放 Worker
-- 不假设 Worker 里一定能拿到 `navigator.usb`
-- Worker 通过 transferable `ArrayBuffer` 接收数据, 避免主线程拷贝
+- `dumpsys` 逐行解析, 不保留完整输出; ZIP inflate 使用浏览器异步 `DecompressionStream`
+- AXML 和 DEX 解析器不依赖 DOM, 后续可迁移到 Worker
+- 不假设 Worker 里一定能拿到 `navigator.usb`; WebUSB 始终留在主线程
 
 ## 连接流程
 
@@ -64,13 +64,13 @@ Connect
 M1 数据流:
 
 ```text
-dumpsys package
+dumpsys package (逐行)
   -> 候选应用 (INTERNET + 敏感权限)
-  -> pm path (基础 + split APK)
-  -> 远程 ZIP 读取 AndroidManifest.xml 和 classes*.dex
-  -> AXML + DEX URL 扫描
+  -> 快速路径: unzip -l / unzip -p / strings / base64
+  -> 回退路径: pm path + tail/head 读取 ZIP 中央目录
+  -> AXML Manifest + DEX URL 扫描
   -> rules / classifier / exposure / advisor
-  -> report.json / report.md / report.html / report.csv
+  -> ScanResult -> 页面 / report.json / report.md / report.csv
 ```
 
 ## 数据所有权
@@ -95,4 +95,4 @@ dumpsys package
 
 ## 当前范围
 
-M0 只有连接链路和设备/包列表. M1 才引入 `dumpsys`, 远程 ZIP, AXML, DEX 和规则. M0 的页面文案必须明确这个边界.
+M1 已包含连接, 包列表, 权限与端点扫描, AXML, DEX URL, 规则, 建议和 JSON/Markdown/CSV 报告. DeepScan, 报告 diff 和 appops 属于 M2/M3.

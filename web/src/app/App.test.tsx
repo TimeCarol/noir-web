@@ -5,7 +5,7 @@
  * 约束: 不触发真实 WebUSB, 也不加载外部资源
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.2
+ * 版本: v1.3
  */
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -23,6 +23,7 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: '连接设备' })).toBeInTheDocument();
     expect(await screen.findByText('当前浏览器不支持 WebUSB')).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: '应用列表' }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /隐私审计/ }).length).toBeGreaterThan(0);
     expect(document.documentElement.style.getPropertyValue('--brand-icon')).toContain('data:image/svg+xml');
   });
 });

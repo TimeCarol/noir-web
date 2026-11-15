@@ -32,7 +32,7 @@
 - 只从 `antd`, `antd/locale/*`, `@ant-design/icons` 导入. 禁止 `antd/es`, `antd/lib`, `@ant-design/pro-*`
 - 颜色只用 Radix 色阶和 Ant Design 语义 token. 不写自造十六进制色值, 品牌 SVG 的默认值除外
 - 基础字号只使用 12 / 14 / 24px, 边框 `0.5px`, 不加装饰性阴影和动画
-- WebUSB 只在主线程使用. 重解析放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
+- WebUSB 只在主线程使用. `dumpsys` 逐行解析, ZIP 使用异步流; CPU 时间长的 DeepScan 放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
 - 默认只读. 写操作必须先展示命令和回滚方式, 再由用户确认
 - 这是纯静态应用, 不新增后端、数据库、登录或 API 代理, 除非用户明确批准
 
@@ -77,11 +77,11 @@
 - `web/src/lib` 只放跨功能纯函数, 不新增无业务含义的 `utils` / `common` / `helpers`
 - 一个目录一个职责. 子模块不反向依赖页面, 页面不直接实现协议解析
 
-## 锁定目标
+## 当前目标
 
-M0 的目标是: Chrome / Edge 桌面版通过 WebUSB 连接一台已授权的 Android 设备, 读取设备属性和基础 APK 清单, 不崩溃, 有明确错误指引.
+M1 已实现: Chrome / Edge 桌面版通过 WebUSB 连接一台已授权的 Android 设备, 读取设备属性, 扫描权限和端点, 解析 AXML, 计算风险, 生成建议和 JSON/Markdown/CSV 报告.
 
-M0 不包含: 权限解析, 端点抽取, AXML, 风险评分, 报告, appops, DeepScan, `noir diff`. 没实现的能力不能写成已可用.
+M1 不包含: DeepScan, 报告 diff, HTML 导出, appops 写操作. 没实现的能力不能写成已可用.
 
 未完成项以 [TODO.md](TODO.md) 为准, 变更记录写在 [CHANGELOG.md](CHANGELOG.md).
 

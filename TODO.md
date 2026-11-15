@@ -20,22 +20,24 @@
 
 ## M1
 
-- [ ] Stream `dumpsys package` and port shared UID parsing
-- [ ] Filter candidates by INTERNET and sensitive permissions
-- [ ] Discover split APKs with `pm path`
-- [ ] Read ZIP central directory with `tail` and `head`
-- [ ] Inflate `AndroidManifest.xml` and `classes*.dex`
-- [ ] Port NOIR AXML parser and manifest facts
-- [ ] Extract URLs from DEX bytes
-- [ ] Port Rules, Classifier, Exposure and Domains
-- [ ] Keep `report.json` compatible with NOIR
+- [x] Stream `dumpsys package` and port shared UID parsing
+- [x] Filter candidates by INTERNET and sensitive permissions
+- [x] Discover split APKs with `pm path`
+- [x] Read ZIP central directory with `tail` and `head`
+- [x] Inflate `AndroidManifest.xml` and `classes*.dex`
+- [x] Port NOIR AXML parser and manifest facts
+- [x] Extract URLs from DEX bytes
+- [x] Port Rules, Classifier, Exposure and Domains
+- [x] Keep `report.json` compatible with NOIR
 
 ## M2
 
-- [ ] Risk dashboard and app detail
-- [ ] Recommendations and rollback plan
-- [ ] JSON, Markdown, HTML and CSV export
-- [ ] DNS tracker, review and functional lists
+- [x] Risk dashboard and app detail
+- [x] Recommendations
+- [ ] Rollback plan
+- [x] JSON, Markdown and CSV export
+- [ ] HTML export
+- [x] DNS tracker, review and functional lists
 - [ ] Import two reports and diff
 - [ ] IndexedDB AppFacts cache with APK path, size and mtime
 

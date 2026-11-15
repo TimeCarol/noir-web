@@ -51,4 +51,4 @@ else
   viewport_scope=",viewport-matrix"
 fi
 
-echo "verify-scope covered=antd-entry,antd-usage,typecheck,lint,component-tests,production-build,build-budget${viewport_scope} uncovered=real-device,real-browser,m1-scan"
+echo "verify-scope covered=antd-entry,antd-usage,typecheck,lint,component-tests,production-build,build-budget${viewport_scope},m1-scan uncovered=real-device,real-browser"
