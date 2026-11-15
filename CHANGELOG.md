@@ -21,6 +21,7 @@
 - Device snapshot from `getprop`
 - Expanded connect-page device card with identifiers, network state, MAC addresses and USB debugging; empty fields stay hidden
 - System card with version, build, security, partition, runtime, kernel and graphics facts
+- Hide device and system cards until a device is connected
 - Connecting no longer navigates directly to the apps page
 - Base APK inventory from `pm list packages -f`
 - Connect page with compatibility checks, authorization steps and failure guidance
