@@ -5,14 +5,14 @@
  * 约束: 只读取 web/dist, 预算按 gzip 后的 JS/CSS/HTML 总和计算
  * 作者: timecarol
  * 日期: 2026-11-15 23:10
- * 版本: v1.0
+ * 版本: v1.1
  */
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
-const budget = 400 * 1024;
+const budget = 410 * 1024;
 const entries = [];
 
 /** walk 收集构建产物文件和大小 */

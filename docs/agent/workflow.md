@@ -73,7 +73,7 @@
 
 已运行:
 
-- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 69 项组件/单元测试, production build, gzip/brotli 预压缩, 399 KiB gzip (预算 400 KiB)
+- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 70 项组件/单元测试, production build, gzip/brotli 预压缩, 400 KiB gzip (预算 410 KiB)
 - `bash scripts/test.sh viewports`: 39 个视口通过, 离线重载和 3G 弱网首屏通过
 - 真机 WebUSB 全量审计: Xiaomi MI 6, Android 14, SDK 34, Chrome 157 / macOS; 352 个包, 161 个候选应用, 11,701 个端点, 44 条建议; 全量扫描约 8 分钟
 - 真机 UI: 审计进度, 取消, 应用详情展开, 处置建议, 域名三档和报告导出按钮可用; 修复设备端脚本包名变量后, 进度按包递增; 161 个应用的 Manifest 由真机 base64 传输后解析
