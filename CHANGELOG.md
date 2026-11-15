@@ -4,6 +4,8 @@
 
 ### Added
 
+- GitHub Actions `verify` workflow for master pushes and pull requests
+
 - WebUSB to ADB connection with Tango, browser-generated RSA key and IndexedDB credential store
 - Device snapshot from `getprop`
 - Base APK inventory from `pm list packages -f`
