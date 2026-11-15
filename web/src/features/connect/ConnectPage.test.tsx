@@ -5,12 +5,13 @@
  * 约束: 使用合成设备和失败对象, 不触发真实 WebUSB
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.2
+ * 版本: v1.4
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import type { ConnectedDevice, DeviceInfo } from '../../adb/types';
 import type { ConnectionFailure } from '../../adb/errors';
 
@@ -28,16 +29,54 @@ const info: DeviceInfo = {
   build: 'AP1A.240505.004',
   fingerprint: 'google/shiba/shiba:14/AP1A.240505.004/1234567:user/release-keys',
   abi: 'arm64-v8a',
+  deviceName: 'My Pixel',
+  device: 'shiba',
+  board: 'shiba',
+  platform: 'tensor',
+  brand: 'google',
+  googleAdId: '',
+  androidId: 'android-id-1',
+  serialNumber: 'SERIAL-1',
+  signalType: 'LTE',
+  carrier: 'TEST CARRIER',
+  networkType: 'WLAN',
+  wifiMac: '8e:95:83:7b:de:9d',
+  bluetoothMac: '4C:49:E3:D1:3D:92',
+  usbDebugging: true,
+  buildTime: 'Thu Mar 13 13:54:20 UTC 2025',
+  deviceVersion: 'OS2.0.2.0.ULJCNXM',
+  securityPatch: '2025-03-01',
+  baseband: 'AT20-0718',
+  language: 'zh-CN',
+  timezone: 'Asia/Shanghai',
+  rooted: false,
+  uptime: '1 天 2 小时 3 分',
+  partitionLayout: 'A/B',
+  seamlessUpdates: true,
+  dynamicPartitions: true,
+  treble: true,
+  javaRuntime: 'ART 14',
+  javaVm: 'ART',
+  javaHeap: '512 MB',
+  kernelArch: 'aarch64',
+  kernelVersion: '5.10.1',
+  openGlEs: '3.2',
+  selinux: 'Enforcing',
+  openssl: 'OpenSSL 3.0.0',
 };
 
 /** renderPage 预置查询缓存并注入连接状态 */
-function renderPage(options: { connected?: boolean; failure?: ConnectionFailure | null } = {}) {
+function LocationProbe() {
+  return <span data-testid="location">{useLocation().pathname}</span>;
+}
+
+function renderPage(options: { connected?: boolean; failure?: ConnectionFailure | null; connectResult?: boolean } = {}) {
   const connected = options.connected ?? false;
   adbState.useAdb.mockReturnValue({
     device: connected ? device : null,
     phase: options.failure ? 'error' : connected ? 'ready' : 'idle',
     failure: options.failure ?? null,
-    connect: vi.fn(),
+    connect: vi.fn().mockResolvedValue(options.connectResult ?? false),
     disconnect: vi.fn(),
     clearFailure: vi.fn(),
   });
@@ -53,6 +92,7 @@ function renderPage(options: { connected?: boolean; failure?: ConnectionFailure 
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={['/connect']}>
         <ConnectPage />
+        <LocationProbe />
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -65,12 +105,35 @@ describe('ConnectPage', () => {
     expect(screen.getByRole('button', { name: /选择设备/ })).toBeDisabled();
   });
 
-  it('已连接时显示设备属性和应用数量', () => {
+  it('已连接时显示设备字段并隐藏空值', () => {
     renderPage({ connected: true });
+    expect(screen.getByText('设备名称')).toBeInTheDocument();
+    expect(screen.getByText('My Pixel')).toBeInTheDocument();
+    expect(screen.getByText('硬件序列号')).toBeInTheDocument();
     expect(screen.getByText('SERIAL-1')).toBeInTheDocument();
-    expect(screen.getByText('14 (SDK 34)')).toBeInTheDocument();
-    expect(screen.getByText('2 个')).toBeInTheDocument();
+    expect(screen.getByText('设备信号类型')).toBeInTheDocument();
+    expect(screen.getByText('LTE')).toBeInTheDocument();
+    expect(screen.getByText('USB调试')).toBeInTheDocument();
+    expect(screen.getByText('已开启')).toBeInTheDocument();
     expect(screen.getByText(info.fingerprint)).toBeInTheDocument();
+    expect(screen.queryByText('谷歌广告ID')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '系统' })).toBeInTheDocument();
+    expect(screen.getByText('安全补丁级别')).toBeInTheDocument();
+    expect(screen.getByText('Project Treble')).toBeInTheDocument();
+    expect(screen.getByText('未 Root')).toBeInTheDocument();
+    expect(screen.getByText('OpenSSL 3.0.0')).toBeInTheDocument();
+  });
+
+  it('连接成功后停留在连接页', async () => {
+    Object.defineProperty(navigator, 'usb', { configurable: true, value: {} });
+    try {
+      const user = userEvent.setup();
+      renderPage({ connectResult: true });
+      await user.click(screen.getByRole('button', { name: /选择设备/ }));
+      expect(screen.getByTestId('location')).toHaveTextContent('/connect');
+    } finally {
+      Object.defineProperty(navigator, 'usb', { configurable: true, value: undefined });
+    }
   });
 
   it('连接失败时显示可执行步骤和命令', () => {

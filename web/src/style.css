@@ -5,7 +5,7 @@
  * 约束: 12/14/24px 基础字号, 触屏输入 16px, 0.5px 边框, 无装饰性阴影和动画
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v2.0
+ * 版本: v2.2
  */
 @import '@radix-ui/colors/slate.css';
 @import '@radix-ui/colors/slate-dark.css';
@@ -106,7 +106,7 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
 .device-summary-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .device-summary-title { margin: 0; font-size: 14px; font-weight: 500; }
 .device-summary .ant-descriptions-view table { width: 100%; table-layout: fixed; }
-.device-summary .ant-descriptions-item-label { width: 88px; color: var(--slate-11); font-size: 12px; }
+.device-summary .ant-descriptions-item-label { width: 150px; color: var(--slate-11); font-size: 12px; }
 .device-summary .ant-descriptions-item-content { min-width: 0; overflow: hidden; }
 .device-fingerprint { display: block; max-width: 100%; }
 .failure-detail p { margin: 0 0 12px; }

@@ -5,20 +5,19 @@
  * 约束: 连接只读取设备属性和包列表, 不执行任何写操作
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.4
+ * 版本: v1.6
  */
 import { Alert, Button, Card, Space, Steps, Tag, Typography } from 'antd';
 import { ReloadOutlined, UsbOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { useAdb } from '../../app/adb-context';
 import { hasWebUsb, isSecureContext } from '../../adb/connect';
 import { readAndStoreDeviceInfo, readAndStorePackages } from '../../storage/device-cache';
 import { DeviceSummary } from './DeviceSummary';
+import { SystemSummary } from './SystemSummary';
 
 /** ConnectPage 组合兼容性提示, 授权步骤和设备摘要 */
 export default function ConnectPage() {
-  const navigate = useNavigate();
   const { device, phase, failure, connect, disconnect, clearFailure } = useAdb();
   const supported = hasWebUsb() && isSecureContext();
   const busy = phase === 'requesting' || phase === 'authorizing';
@@ -46,14 +45,13 @@ export default function ConnectPage() {
   const currentStep = device ? 2 : phase === 'authorizing' ? 1 : 0;
 
   async function handleConnect() {
-    const connected = await connect();
-    if (connected) navigate('/apps');
+    await connect();
   }
 
   return (
     <div className="page-stack">
       <Card
-        title="设备"
+        title="连接"
         extra={<Tag color={device ? 'success' : 'default'}>{device ? '已连接' : '未连接'}</Tag>}
       >
         {!isSecureContext() && (
@@ -123,9 +121,10 @@ export default function ConnectPage() {
         deviceName={device?.name ?? ''}
         serial={device?.serial ?? ''}
         info={infoQuery.data}
-        packageCount={packagesQuery.data?.length}
-        loading={Boolean(device) && (infoQuery.isPending || packagesQuery.isPending)}
+        loading={Boolean(device) && infoQuery.isPending}
       />
+
+      {device && <SystemSummary info={infoQuery.data} loading={infoQuery.isPending} />}
     </div>
   );
 }

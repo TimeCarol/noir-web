@@ -10,7 +10,9 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 
 - Chrome / Edge / Opera desktop connects to an Android device over WebUSB.
 - First connection generates an ADB RSA key in the browser and stores it in IndexedDB.
-- Device info: manufacturer, model, Android version, SDK, build, ABI, fingerprint.
+- Device details: name, model, manufacturer, codename, board, platform, brand, Google advertising ID, Android ID, hardware serial, fingerprint, signal type, carrier, network type, WLAN/Bluetooth MAC and USB debugging. Empty fields are hidden.
+- System card: version, API level, build identity/time, security patch, baseband, locale, timezone, root, uptime, partition/seamless/dynamic updates, Treble, ART/JVM, kernel, OpenGL ES, SELinux and OpenSSL. Empty fields are hidden.
+- Connecting stays on the connect page; the application inventory is a separate page.
 - Base APK inventory: package name and APK path from `pm list packages -f`.
 - Candidate filtering by `INTERNET` plus at least one granted sensitive permission.
 - Streaming `dumpsys package` parsing with duplicate-block and shared-UID merging.
@@ -87,9 +89,9 @@ All device data stays in the browser. There is no backend, telemetry, remote fon
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 69 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 70 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
-The production bundle is 399 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 400 KiB or a source map appears.
+The production bundle is 402 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 410 KiB or a source map appears.
 
 Chrome DevTools checks on the dev and production builds:
 
