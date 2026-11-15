@@ -6,6 +6,7 @@
 
 ```text
 noir-web/
+├── .github/workflows/verify.yml # CI: full test suite
 ├── AGENTS.md                    # 跨工具共享约束入口
 ├── CLAUDE.md                    # 只有 @AGENTS.md
 ├── ARCHITECTURE.md              # 总体结构、线程和安全边界
