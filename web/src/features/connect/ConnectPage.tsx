@@ -5,7 +5,7 @@
  * 约束: 连接只读取设备属性和包列表, 不执行任何写操作
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.6
+ * 版本: v1.7
  */
 import { Alert, Button, Card, Space, Steps, Tag, Typography } from 'antd';
 import { ReloadOutlined, UsbOutlined } from '@ant-design/icons';
@@ -117,14 +117,17 @@ export default function ConnectPage() {
         </section>
       </Card>
 
-      <DeviceSummary
-        deviceName={device?.name ?? ''}
-        serial={device?.serial ?? ''}
-        info={infoQuery.data}
-        loading={Boolean(device) && infoQuery.isPending}
-      />
-
-      {device && <SystemSummary info={infoQuery.data} loading={infoQuery.isPending} />}
+      {device && (
+        <>
+          <DeviceSummary
+            deviceName={device.name}
+            serial={device.serial}
+            info={infoQuery.data}
+            loading={infoQuery.isPending}
+          />
+          <SystemSummary info={infoQuery.data} loading={infoQuery.isPending} />
+        </>
+      )}
     </div>
   );
 }

@@ -103,6 +103,8 @@ describe('ConnectPage', () => {
     renderPage();
     expect(screen.getByText('当前浏览器不支持 WebUSB')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /选择设备/ })).toBeDisabled();
+    expect(screen.queryByRole('heading', { name: '设备' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '系统' })).not.toBeInTheDocument();
   });
 
   it('已连接时显示设备字段并隐藏空值', () => {

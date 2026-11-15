@@ -89,7 +89,7 @@ All device data stays in the browser. There is no backend, telemetry, remote fon
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 70 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 71 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
 The production bundle is 402 KiB gzip across JS/CSS/HTML, has no source maps, and ships 28 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 410 KiB or a source map appears.
 
