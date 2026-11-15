@@ -5,7 +5,7 @@
  * 约束: 读取中的字段显示占位, 不伪造型号或版本
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.3
+ * 版本: v1.4
  */
 import { Descriptions, Tag, Typography } from 'antd';
 import type { DescriptionsProps } from 'antd';
@@ -40,7 +40,7 @@ export function DeviceSummary({ deviceName, serial, info, packageCount, loading 
     { key: 'build', label: '构建', children: valueOrDash(info?.build) },
     { key: 'abi', label: 'ABI', children: valueOrDash(info?.abi) },
     { key: 'packages', label: '应用', children: packageCount == null ? '—' : `${packageCount} 个` },
-    { key: 'fingerprint', label: '指纹', children: <span className="identifier" title={info?.fingerprint}>{valueOrDash(info?.fingerprint)}</span> },
+    { key: 'fingerprint', label: '指纹', span: 'filled', children: <Typography.Text className="identifier device-fingerprint" title={info?.fingerprint} ellipsis={{ tooltip: info?.fingerprint }}>{valueOrDash(info?.fingerprint)}</Typography.Text> },
   ];
   return (
     <section className="device-summary" aria-label="设备信息">
@@ -48,7 +48,7 @@ export function DeviceSummary({ deviceName, serial, info, packageCount, loading 
         <h2 className="device-summary-title">设备信息</h2>
         <Tag color={loading ? 'processing' : 'success'}>{loading ? '读取中' : '已连接'}</Tag>
       </div>
-      <Descriptions column={1} size="small" items={items} />
+      <Descriptions size="small" column={{ xs: 1, sm: 1, md: 2, lg: 3 }} items={items} />
     </section>
   );
 }

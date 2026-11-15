@@ -5,7 +5,7 @@
  * 约束: 12/14/24px 基础字号, 触屏输入 16px, 0.5px 边框, 无装饰性阴影和动画
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.9
+ * 版本: v2.0
  */
 @import '@radix-ui/colors/slate.css';
 @import '@radix-ui/colors/slate-dark.css';
@@ -93,8 +93,7 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
 .ant-steps .ant-steps-item-title { font-size: 14px !important; }
 .ant-steps .ant-steps-item-description { font-size: 12px !important; }
 .ant-steps-vertical .ant-steps-item-content { min-height: 64px; }
-.identifier { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
-.connect-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); gap: 32px; align-items: start; }
+.identifier { display: block; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 .connect-panel { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
 .device-summary { min-width: 0; padding: 20px; border: 0.5px solid var(--slate-6); border-radius: 6px; background: var(--slate-2); }
 .device-summary-empty { display: flex; flex-direction: column; gap: 20px; min-height: 220px; }
@@ -106,8 +105,10 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
 .device-placeholder-row:nth-child(5) { width: 46%; }
 .device-summary-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .device-summary-title { margin: 0; font-size: 14px; font-weight: 500; }
-.device-summary .ant-descriptions-item-label { color: var(--slate-11); font-size: 12px; }
-.device-summary .ant-descriptions-item-content { min-width: 0; }
+.device-summary .ant-descriptions-view table { width: 100%; table-layout: fixed; }
+.device-summary .ant-descriptions-item-label { width: 88px; color: var(--slate-11); font-size: 12px; }
+.device-summary .ant-descriptions-item-content { min-width: 0; overflow: hidden; }
+.device-fingerprint { display: block; max-width: 100%; }
 .failure-detail p { margin: 0 0 12px; }
 .guide-list { display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
 .guide-list li { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; align-items: baseline; }
@@ -155,7 +156,6 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
   .mobile-navigation { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 0 max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); margin-bottom: 24px; border-bottom: 0.5px solid var(--slate-6); }
   .mobile-navigation a { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 4px; border-radius: 6px; color: var(--slate-11); font-size: 12px; text-decoration: none; white-space: nowrap; }
   .mobile-navigation a[aria-current="page"] { color: var(--iris-11); background: var(--iris-3); }
-  .connect-layout { grid-template-columns: minmax(0, 1fr); }
   .audit-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .audit-domains { grid-template-columns: minmax(0, 1fr); gap: 18px; }
 }
