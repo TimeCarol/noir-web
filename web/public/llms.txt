@@ -1,0 +1,19 @@
+# NOIR Web
+
+NOIR Web is an unofficial browser-based Android privacy audit. It connects to an Android device over WebUSB and reads device properties and the installed APK inventory entirely in the browser.
+
+## Scope
+
+- M0: WebUSB authorization, ADB authentication, device info, base APK inventory
+- M1: permissions, endpoints, AXML, DEX, reports
+
+## Privacy
+
+All device data stays in the browser. There is no backend, telemetry or upload path.
+
+## Links
+
+- [Source](https://github.com/TimeCarol/noir-web)
+- [Design](https://github.com/TimeCarol/noir-web/blob/main/DESIGN.md)
+- [NOIR upstream](https://github.com/Verlintas/NOIR)
+- [Tango ADB](https://github.com/yume-chan/ya-webadb)

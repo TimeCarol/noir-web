@@ -1,0 +1,35 @@
+# 依赖与构建产物
+node_modules/
+web/node_modules/
+web/dist/
+dist/
+*.tsbuildinfo
+coverage/
+.playwright-mcp/
+test-results/
+playwright-report/
+
+# 本地开发与环境
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# 本地材料与日志
+*.log
+logs/
+.codex-tmp/
+docs/local/
+archive/local/
+outputs/
+
+# 证书与私钥
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+.ssh/

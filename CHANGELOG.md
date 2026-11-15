@@ -1,0 +1,37 @@
+# Changelog
+
+## Unreleased
+
+### Added
+
+- WebUSB to ADB connection with Tango, browser-generated RSA key and IndexedDB credential store
+- Device snapshot from `getprop`
+- Base APK inventory from `pm list packages -f`
+- Connect page with compatibility checks, authorization steps and failure guidance
+- Apps page with package/path search and pagination
+- Roadmap page that states the M0 boundary
+- React 19, TypeScript 7, Vite 8, Ant Design 6, Radix Colors, TanStack Query and React Router shell
+- Static deployment config, agent constraints and design documents
+- `robots.txt` and `llms.txt` for crawlers and AI discovery
+- Accessible navigation and heading structure verified by Lighthouse
+- 39-viewport Chrome matrix covering ultrawide, 4K, 2K, 1080p, 720p, laptops, tablets, phones and foldables
+- Real-device WebUSB verification on Xiaomi MI 6, Android 14
+- Offline service worker, gzip/brotli precompression, build size budget and Oxlint
+- Route skeleton, one-shot chunk retry, idle prefetch and offline indicator
+- Ant Design 6.7.0 best-practice guide and deprecated-prop check
+- Accessible clear label on search and width-bounded package ellipsis
+
+### Changed
+
+- Theme-aware brand mark in the sidebar
+- Sidebar supports drag and keyboard resize, with persisted width and a rounded collapse control
+- Removed static explanatory copy from the connect, apps and roadmap pages
+- Empty device state uses placeholder rows instead of instruction text
+
+### Not yet
+
+- Permission and endpoint scanning
+- AXML and DEX parsing
+- Risk scoring and reports
+- appops apply/rollback
+- DeepScan and `noir diff`
