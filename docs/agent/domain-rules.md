@@ -11,7 +11,7 @@
 - ADB 接口同一时间只能被一个程序占用. `DeviceBusyError` 必须显示 `adb kill-server` 和关闭 Android Studio / scrcpy / 其他标签页的指引
 - WebUSB 只在安全上下文可用. 生产必须 HTTPS, 本地开发使用 `http://localhost`
 - 浏览器不能建立原始 TCP 连接, 所以不做无线 ADB. Chrome for Android 只有在手机作为 USB host 连接另一台 Android 时才有意义
-- WebUSB 只在主线程使用. M1 的重解析放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
+- WebUSB 只在主线程使用. `dumpsys` 逐行解析, ZIP 使用异步流, 单包解析不进入 UI 状态; CPU 时间长的 DeepScan 放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
 - 默认只读. `appops set`, `pm uninstall`, `pm revoke` 都必须先展示命令和回滚方式, 再由用户确认. 不自动卸载
 - `dumpsys package` 可能很大, 必须流式读取和解析, 不把完整输出拼成一个巨大字符串
 - split APK 和 `pm path` 的多路径在 M1 处理, M0 只读 `pm list packages -f` 的基础 APK

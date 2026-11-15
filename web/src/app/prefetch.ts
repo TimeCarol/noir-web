@@ -5,7 +5,7 @@
  * 约束: 生产环境且非省流或 2G 网络才预取
  * 作者: timecarol
  * 日期: 2026-11-15 23:10
- * 版本: v1.0
+ * 版本: v1.1
  */
 interface NetworkInformationLike {
   saveData?: boolean;
@@ -19,11 +19,12 @@ type IdleScheduler = {
 /** loadLazyRoutes 预取非首屏页面 chunk */
 function loadLazyRoutes() {
   void import('../features/apps/AppsPage');
+  void import('../features/audit/AuditPage');
   void import('../features/roadmap/RoadmapPage');
 }
 
 
-/** prefetchRoutes 在页面空闲时加载应用列表和路线图 chunk */
+/** prefetchRoutes 在页面空闲时加载应用列表, 审计和路线图 chunk */
 export function prefetchRoutes(): void {
   if (!import.meta.env.PROD) return;
   const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;

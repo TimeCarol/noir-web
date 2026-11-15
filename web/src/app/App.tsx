@@ -4,8 +4,8 @@
  * 依赖: Ant Design / Radix 主题 / React Router
  * 约束: 桌面侧栏和移动导航共享同一组路由, 不在页面里解释设计实现
  * 作者: timecarol
- * 日期: 2026-11-15 22:06
- * 版本: v1.6
+ * 日期: 2026-11-15 23:55
+ * 版本: v1.7
  */
 import { Suspense, useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
 import { Button, ConfigProvider, Space } from 'antd';
@@ -17,6 +17,7 @@ import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
   MoonOutlined,
+  SafetyCertificateOutlined,
   SunOutlined,
 } from '@ant-design/icons';
 import zhCN from 'antd/locale/zh_CN';
@@ -34,6 +35,7 @@ import { RouteSkeleton } from '../components/RouteSkeleton';
 
 const ConnectPage = lazyWithRetry(() => import('../features/connect/ConnectPage'));
 const AppsPage = lazyWithRetry(() => import('../features/apps/AppsPage'));
+const AuditPage = lazyWithRetry(() => import('../features/audit/AuditPage'));
 const RoadmapPage = lazyWithRetry(() => import('../features/roadmap/RoadmapPage'));
 
 const themes = {
@@ -45,6 +47,7 @@ const themeOrder: ThemeMode[] = ['system', 'light', 'dark'];
 const navigation = [
   { key: '/connect', label: '连接设备', icon: <ApiOutlined /> },
   { key: '/apps', label: '应用列表', icon: <AppstoreOutlined /> },
+  { key: '/audit', label: '隐私审计', icon: <SafetyCertificateOutlined /> },
   { key: '/roadmap', label: '路线图', icon: <CompassOutlined /> },
 ];
 
@@ -122,6 +125,7 @@ function Shell({ themeMode, changeTheme }: { themeMode: ThemeMode; changeTheme: 
               <Routes>
                 <Route path="/connect" element={<ConnectPage />} />
                 <Route path="/apps" element={<AppsPage />} />
+                <Route path="/audit" element={<AuditPage />} />
                 <Route path="/roadmap" element={<RoadmapPage />} />
                 <Route path="*" element={<Navigate to="/connect" replace />} />
               </Routes>

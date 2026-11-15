@@ -1,11 +1,11 @@
 /*
  * 职责: 定义 Radix 工作台的布局, 三档排版和细边框
- * 导出: 工作台, 连接页和包列表类名
+ * 导出: 工作台, 连接页, 包列表和审计类名
  * 依赖: Radix CSS 色阶, Ant Design 语义 token
  * 约束: 12/14/24px 基础字号, 触屏输入 16px, 0.5px 边框, 无装饰性阴影和动画
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.7
+ * 版本: v1.9
  */
 @import '@radix-ui/colors/slate.css';
 @import '@radix-ui/colors/slate-dark.css';
@@ -119,6 +119,29 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
 .guide-list-compact li::marker { color: var(--slate-9); }
 .package-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
 .package-toolbar .ant-input-affix-wrapper { max-width: 420px; }
+
+.audit-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.audit-toolbar .ant-select { min-width: 126px; }
+.audit-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.audit-stat { min-width: 0; padding: 16px 18px; border: 0.5px solid var(--slate-6); border-radius: 6px; background: var(--slate-2); }
+.audit-stat .ant-statistic-title { margin-bottom: 4px; color: var(--slate-11); font-size: 12px; }
+.audit-stat .ant-statistic-content { font-size: 24px; font-weight: 500; letter-spacing: -.03em; }
+.audit-app-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.audit-app-toolbar .ant-input-affix-wrapper { max-width: 420px; }
+.audit-detail { display: flex; flex-direction: column; gap: 18px; padding: 4px 0 8px; min-width: 0; }
+.audit-detail-section { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.audit-detail-section h2 { color: var(--slate-11); }
+.audit-detail-section h2, .audit-domain-group h2 { margin: 0; font-size: 14px; font-weight: 500; }
+.audit-plain-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; min-width: 0; }
+.audit-plain-list li { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; min-width: 0; }
+.audit-plain-list .identifier { max-width: 100%; }
+.audit-plain-list li > span:last-child { color: var(--slate-11); font-size: 12px; }
+.audit-endpoint-list { display: flex; flex-direction: column; gap: 4px; max-height: 320px; margin: 0; padding: 0; overflow: auto; list-style: none; min-width: 0; }
+.audit-endpoint-list .ant-typography { max-width: 100%; font-size: 12px; }
+.audit-domains { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.audit-domain-group { min-width: 0; }
+.audit-domain-group h2 { margin-bottom: 10px; }
+.audit-domain-group .ant-tag { max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 .screen-reader-status { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 @media (max-width: 1200px) {
   .workspace-header { padding: 0 28px; }
@@ -129,10 +152,12 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
   .workspace-main { margin-left: 0; }
   .workspace-header { height: calc(88px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
   .workspace-header .ant-btn { width: 44px; height: 44px; }
-  .mobile-navigation { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 0 max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); margin-bottom: 24px; border-bottom: 0.5px solid var(--slate-6); }
-  .mobile-navigation a { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 12px; border-radius: 6px; color: var(--slate-11); text-decoration: none; }
+  .mobile-navigation { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 0 max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); margin-bottom: 24px; border-bottom: 0.5px solid var(--slate-6); }
+  .mobile-navigation a { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 4px; border-radius: 6px; color: var(--slate-11); font-size: 12px; text-decoration: none; white-space: nowrap; }
   .mobile-navigation a[aria-current="page"] { color: var(--iris-11); background: var(--iris-3); }
   .connect-layout { grid-template-columns: minmax(0, 1fr); }
+  .audit-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .audit-domains { grid-template-columns: minmax(0, 1fr); gap: 18px; }
 }
 @media (max-width: 760px) {
   .app-content { padding: 0 max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); gap: 16px; }
@@ -141,8 +166,8 @@ h3 { margin: 0; font-size: 14px; font-weight: 500; }
   .ant-card-head-wrapper { flex-wrap: wrap; gap: 12px; padding: 16px 0; }
   .ant-card-extra { margin-inline-start: 0; }
   .guide-list li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
-  .package-toolbar { flex-direction: column; align-items: stretch; }
-  .package-toolbar .ant-input-affix-wrapper { max-width: none; }
+  .package-toolbar, .audit-app-toolbar { flex-direction: column; align-items: stretch; }
+  .package-toolbar .ant-input-affix-wrapper, .audit-app-toolbar .ant-input-affix-wrapper { max-width: none; }
   .device-summary { padding: 16px; }
 }
 @media (pointer: coarse) {

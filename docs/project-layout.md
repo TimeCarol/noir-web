@@ -42,7 +42,7 @@ noir-web/
     ├── dist/                    # 生成产物, 不手改
     └── src/
         ├── main.tsx             # React root 和 QueryClient
-        ├── style.css            # 工作台、连接页、包列表
+        ├── style.css            # 工作台、连接页、包列表、审计
         ├── app/
         │   ├── App.tsx          # 导航、路由、主题
         │   ├── adb-context.tsx  # ADB 连接生命周期
@@ -55,11 +55,27 @@ noir-web/
         ├── adb/
         │   ├── connect.ts       # WebUSB 授权和 ADB 认证
         │   ├── device.ts        # getprop 设备快照
+        │   ├── dumpsys.ts       # 流式权限和共享 UID 解析
+        │   ├── device-scan.ts   # 设备端 APK 扫描和远程 ZIP 回退
         │   ├── errors.ts        # 连接失败指引
         │   ├── packages.ts      # pm list packages -f
+        │   ├── shell.ts         # shell 文本、字节和流接口
         │   └── types.ts         # 连接、设备、包数据边界
-        ├── apk/                 # M1: ZIP, AXML, DEX, Manifest
-        ├── core/                # M1: 规则、评分、报告、diff
+        ├── apk/
+        │   ├── axml.ts          # Android 二进制 XML
+        │   ├── dex.ts           # DEX URL 提取
+        │   ├── manifest.ts      # Manifest 事实
+        │   └── remote-zip.ts    # tail/head ZIP 读取
+        ├── core/
+        │   ├── advisor.ts       # 处置建议
+        │   ├── classifier.ts    # 厂商和类别
+        │   ├── domains.ts       # 域名三档
+        │   ├── exposure.ts      # 数据类别和泄露路径
+        │   ├── models.ts        # 报告数据边界
+        │   ├── report.ts        # JSON/Markdown/CSV
+        │   ├── rules.ts         # 敏感权限和评分
+        │   ├── scan.ts          # 扫描编排
+        │   └── trackers.ts      # SDK 指纹
         ├── components/
         │   ├── DeviceStatus.tsx  # 页头连接状态
         │   ├── NetworkStatus.tsx # 离线状态
@@ -67,8 +83,10 @@ noir-web/
         ├── features/
         │   ├── connect/         # 连接页、设备摘要
         │   ├── apps/            # 包列表和搜索
+        │   ├── audit/           # 审计、证据详情和导出
         │   └── roadmap/         # 当前范围和里程碑
         ├── lib/
+        │   ├── download.ts      # 文本报告下载
         │   ├── errors.ts        # 未知异常转短文本
         │   └── format.ts        # 设备名和空值
         ├── assets/
