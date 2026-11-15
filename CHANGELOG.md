@@ -10,6 +10,10 @@
 - AXML parser and Manifest facts for exported components, backup, cleartext, debuggable and target SDK
 - DEX URL extraction and NOIR-compatible Rules, Classifier, Exposure, Domains, Advisor and Trackers
 - Audit page with progress, cancel, risk table, evidence details and domain tiers
+- USB disconnect and shell timeout handling with retained progress and reconnect guidance
+- Unified OPFS persistence for ADB keys, device snapshots, package inventories and scan results
+- Last scan restore on reconnect
+- Real MI 6 dumpsys and AOSP AXML fixtures for parser and interruption tests
 - JSON, Markdown and CSV report export with NOIR-compatible `report.json`
 - GitHub Actions `verify` workflow for master pushes and pull requests
 

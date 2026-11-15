@@ -7,18 +7,21 @@
  * 日期: 2026-11-16 00:05
  * 版本: v1.0
  */
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import type { ConnectedDevice, DeviceInfo, PackageEntry } from '../../adb/types';
 import type { ScanResult } from '../../core/models';
+import { DeviceDisconnectedError } from '../../adb/shell';
 
 const adbState = vi.hoisted(() => ({ useAdb: vi.fn() }));
 const scanState = vi.hoisted(() => ({ scanPackages: vi.fn() }));
+const storeState = vi.hoisted(() => ({ loadScan: vi.fn(), saveScan: vi.fn() }));
 vi.mock('../../app/adb-context', () => ({ useAdb: adbState.useAdb }));
 vi.mock('../../core/scan', () => ({ scanPackages: scanState.scanPackages }));
+vi.mock('../../storage/device-store', () => ({ loadScan: storeState.loadScan, saveScan: storeState.saveScan }));
 
 import AuditPage from './AuditPage';
 
@@ -102,10 +105,34 @@ function renderPage(connected: ConnectedDevice | null = device) {
 }
 
 describe('AuditPage', () => {
+  beforeEach(() => {
+    storeState.loadScan.mockReset();
+    storeState.loadScan.mockResolvedValue(null);
+    storeState.saveScan.mockReset();
+    storeState.saveScan.mockResolvedValue(true);
+  });
+
   it('未连接时引导用户去连接设备', () => {
     renderPage(null);
     expect(screen.getByText('未连接设备')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '连接设备' })).toBeInTheDocument();
+  });
+
+  it('扫描中 USB 断开时停止并引导重新连接', async () => {
+    scanState.scanPackages.mockRejectedValue(new DeviceDisconnectedError());
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(await screen.findByRole('button', { name: /开始扫描/ }));
+    expect(await screen.findByText('USB 连接已中断')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '重新连接' })).toBeInTheDocument();
+  });
+
+  it('连接后恢复 OPFS 中的最近扫描', async () => {
+    storeState.loadScan.mockResolvedValue(result);
+    renderPage();
+    expect(await screen.findByText('本地')).toBeInTheDocument();
+    expect(screen.getAllByText('com.example.alpha').length).toBeGreaterThan(0);
   });
 
   it('点击开始扫描后展示摘要, 应用和建议', async () => {

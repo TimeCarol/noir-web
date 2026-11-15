@@ -6,7 +6,8 @@
 
 - 浏览器直接说 ADB 协议, 不启动本地 `adb` server, 不依赖 Android SDK. 传输层固定使用 Tango `@yume-chan/adb` 2.6.x
 - `requestDevice()` 必须由用户点击触发. 页面加载时不能静默扫描 USB 设备
-- ADB RSA key 由 WebCrypto 生成, 只保存在当前 origin 的 IndexedDB. 不写 localStorage, 不写日志, 不提供导出
+- ADB RSA key 由 WebCrypto 生成, 只保存在当前 origin 的 OPFS. 不写 IndexedDB, 不写日志, 不提供导出
+- 设备快照, 包清单和扫描结果统一写入 OPFS; 不使用 IndexedDB 或 localStorage 保存设备数据
 - 第一次连接必须在手机上允许 USB 调试. 密钥被撤销或站点数据被清除后需要重新授权
 - ADB 接口同一时间只能被一个程序占用. `DeviceBusyError` 必须显示 `adb kill-server` 和关闭 Android Studio / scrcpy / 其他标签页的指引
 - WebUSB 只在安全上下文可用. 生产必须 HTTPS, 本地开发使用 `http://localhost`
@@ -14,6 +15,7 @@
 - WebUSB 只在主线程使用. `dumpsys` 逐行解析, ZIP 使用异步流, 单包解析不进入 UI 状态; CPU 时间长的 DeepScan 放 Worker, 但不假设 Worker 里一定拿得到 `navigator.usb`
 - 默认只读. `appops set`, `pm uninstall`, `pm revoke` 都必须先展示命令和回滚方式, 再由用户确认. 不自动卸载
 - `dumpsys package` 可能很大, 必须流式读取和解析, 不把完整输出拼成一个巨大字符串
+- USB 断开或 shell 超时必须终止扫描并给出重新连接入口, 不能让页面停在进度条上; 不自动重试不可恢复的 ADB transport 中断
 - split APK 和 `pm path` 的多路径在 M1 处理, M0 只读 `pm list packages -f` 的基础 APK
 
 ## 隐私与数据

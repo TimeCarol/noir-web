@@ -3,7 +3,7 @@
 ## M0
 
 - [x] WebUSB device picker and ADB authentication
-- [x] IndexedDB ADB key persistence
+- [x] OPFS ADB key persistence
 - [x] Device snapshot from `getprop`
 - [x] Base APK inventory from `pm list packages -f`
 - [x] Connect, apps and roadmap pages
@@ -29,6 +29,7 @@
 - [x] Extract URLs from DEX bytes
 - [x] Port Rules, Classifier, Exposure and Domains
 - [x] Keep `report.json` compatible with NOIR
+- [x] Abort scans on USB disconnect or command timeout with reconnect guidance
 
 ## M2
 
@@ -39,7 +40,8 @@
 - [ ] HTML export
 - [x] DNS tracker, review and functional lists
 - [ ] Import two reports and diff
-- [ ] IndexedDB AppFacts cache with APK path, size and mtime
+- [x] OPFS device snapshots, package inventories and latest scan results
+- [ ] OPFS AppFacts cache with APK path, size and mtime
 
 ## M3
 

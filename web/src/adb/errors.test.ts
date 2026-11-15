@@ -34,5 +34,6 @@ describe('describeConnectionError', () => {
     expect(describeConnectionError(new Error('device offline')).kind).toBe('disconnected');
     expect(describeConnectionError(new Error('authentication failed')).kind).toBe('auth');
     expect(describeConnectionError(new Error('unknown failure')).kind).toBe('unknown');
+    expect(describeConnectionError(new Error('OPFS 不可用')).kind).toBe('storage');
   });
 });

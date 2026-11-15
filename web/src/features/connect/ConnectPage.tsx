@@ -13,8 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAdb } from '../../app/adb-context';
 import { hasWebUsb, isSecureContext } from '../../adb/connect';
-import { readDeviceInfo } from '../../adb/device';
-import { listPackages } from '../../adb/packages';
+import { readAndStoreDeviceInfo, readAndStorePackages } from '../../storage/device-cache';
 import { DeviceSummary } from './DeviceSummary';
 
 /** ConnectPage 组合兼容性提示, 授权步骤和设备摘要 */
@@ -26,14 +25,14 @@ export default function ConnectPage() {
 
   const infoQuery = useQuery({
     queryKey: ['device-info', device?.serial],
-    queryFn: () => readDeviceInfo(device!.adb),
+    queryFn: () => readAndStoreDeviceInfo(device!.adb, device!.serial),
     enabled: Boolean(device),
     staleTime: Infinity,
     retry: false,
   });
   const packagesQuery = useQuery({
     queryKey: ['packages', device?.serial],
-    queryFn: () => listPackages(device!.adb),
+    queryFn: () => readAndStorePackages(device!.adb, device!.serial),
     enabled: Boolean(device),
     staleTime: Infinity,
     retry: false,

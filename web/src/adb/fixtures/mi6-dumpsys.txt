@@ -1,0 +1,56 @@
+Packages:
+  Package [com.miui.securitycenter] (b897b09):
+    appId=1000
+    sharedUser=SharedUserSetting{387a949 android.uid.system/1000}
+    codePath=/product/priv-app/MIUISecurityCenter
+    versionCode=40001044 minSdk=23 targetSdk=34
+    versionName=10.4.4-241220.0.1
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP KILL_AFTER_RESTORE ]
+    installerPackageName=null
+  Package [com.android.chrome] (f466e1e):
+    appId=10264
+    codePath=/data/app/~~chrome==/com.android.chrome==/base.apk
+    versionCode=807804704 minSdk=32 targetSdk=36
+    versionName=156.0.8078.47
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP KILL_AFTER_RESTORE RESTORE_ANY_VERSION ]
+    installerPackageName=com.android.vending
+    android.permission.DOWNLOAD_WITHOUT_NOTIFICATION: granted=true
+    android.permission.FOREGROUND_SERVICE_CAMERA: granted=true
+    android.permission.INTERNET: granted=true
+    android.permission.ACCESS_NETWORK_STATE: granted=true
+    android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION: granted=true
+    android.permission.QUERY_ALL_PACKAGES: granted=true
+    android.permission.REQUEST_INSTALL_PACKAGES: granted=false
+    android.permission.ACCESS_FINE_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+  Package [com.miui.cleanmaster] (e917c4a):
+    appId=1000
+    sharedUser=SharedUserSetting{387a949 android.uid.system/1000}
+    codePath=/data/app/MIUICleanMaster
+    versionCode=100809 minSdk=21 targetSdk=34
+    versionName=809.0.241206.release
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP KILL_AFTER_RESTORE LARGE_HEAP ]
+    installerPackageName=null
+Shared users:
+  SharedUser [android.uid.system] (387a949):
+    appId=1000
+    Packages
+      PackageSetting{b897b09 com.miui.securitycenter/1000}
+      PackageSetting{e917c4a com.miui.cleanmaster/1000}
+    install permissions:
+      android.permission.INTERNET: granted=true
+      android.permission.PACKAGE_USAGE_STATS: granted=true
+      android.permission.QUERY_ALL_PACKAGES: granted=true
+    User 0:
+      runtime permissions:
+        android.permission.READ_SMS: granted=true, flags=[ SYSTEM_FIXED|GRANTED_BY_DEFAULT|USER_SENSITIVE_WHEN_GRANTED|RESTRICTION_SYSTEM_EXEMPT]
+        android.permission.ACCESS_FINE_LOCATION: granted=true, flags=[ SYSTEM_FIXED|GRANTED_BY_DEFAULT|RESTRICTION_SYSTEM_EXEMPT]
+  SharedUser [android.media] (31ec534):
+    appId=10083
+    Packages
+      PackageSetting{15aa54f com.android.providers.downloads/10083}
+    install permissions:
+      android.permission.INTERNET: granted=true
+      android.permission.MANAGE_EXTERNAL_STORAGE: granted=true
+    User 0:
+      runtime permissions:
+        android.permission.READ_MEDIA_IMAGES: granted=true, flags=[ SYSTEM_FIXED|GRANTED_BY_DEFAULT]

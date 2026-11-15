@@ -1,12 +1,13 @@
 /**
  * 职责: 验证 AXML 解析和 Manifest 事实提取
  * 导出: 测试用例
- * 依赖: Vitest / 测试内生成的合成 AXML
- * 约束: 不提交真实设备 Manifest, fixture 由本文件按 AXML 格式生成
+ * 依赖: Vitest / 合成 AXML 生成器 / 真实系统 APK Manifest
+ * 约束: 合成样本覆盖边界, 真实样本来自公开 AOSP Tag 系统应用, 不含个人数据
  * 作者: timecarol
  * 日期: 2026-11-16 00:25
- * 版本: v1.1
+ * 版本: v1.2
  */
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseAxml } from './axml';
 import { analyzeManifest } from './manifest';
@@ -153,6 +154,7 @@ function endElement(index: Map<string, number>, name: string): Uint8Array {
 }
 
 const manifest = buildAxml();
+const realManifest = new Uint8Array(readFileSync('src/apk/fixtures/tag-manifest.xml'));
 
 describe('parseAxml', () => {
   it('读取根元素, application 和组件层级', () => {
@@ -164,6 +166,13 @@ describe('parseAxml', () => {
     expect(nodes.some(node => node.name === 'activity' && node.depth === 2)).toBe(true);
   });
 
+  it('解析真实 Android 系统 APK 的 Manifest', () => {
+    const nodes = parseAxml(realManifest);
+    expect(nodes[0]).toMatchObject({ name: 'manifest', depth: 0 });
+    expect(nodes.some(node => node.name === 'application' && node.depth === 1)).toBe(true);
+    expect(nodes.some(node => node.name === 'activity' && node.depth === 2)).toBe(true);
+  });
+
   it('断开的输入不会抛出异常', () => {
     expect(parseAxml(new Uint8Array([0x03, 0x00, 0x08, 0x00]))).toEqual([]);
     expect(parseAxml(manifest.subarray(0, 40))).toEqual([]);
@@ -171,6 +180,16 @@ describe('parseAxml', () => {
 });
 
 describe('analyzeManifest', () => {
+  it('提取真实系统 Manifest 的组件和 SDK', () => {
+    const facts = analyzeManifest(realManifest);
+    expect(facts).not.toBeNull();
+    expect(facts!.targetSdk).toMatch(/^\d+$/);
+    expect(facts!.components.length).toBeGreaterThan(0);
+    expect(facts!.components.some(component => component.kind === 'activity')).toBe(true);
+    expect(facts!.allowBackup).toBeTypeOf('boolean');
+    expect(facts!.cleartext).toBeTypeOf('boolean');
+  });
+
   it('提取目标 SDK, 组件和 exported 状态', () => {
     const facts = analyzeManifest(manifest);
     expect(facts).not.toBeNull();
