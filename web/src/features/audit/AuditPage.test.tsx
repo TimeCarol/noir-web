@@ -16,7 +16,7 @@ import type { ConnectedDevice, DeviceInfo, PackageEntry } from '../../adb/types'
 import type { ScanResult } from '../../core/models';
 import { DeviceDisconnectedError } from '../../adb/shell';
 
-const adbState = vi.hoisted(() => ({ useAdb: vi.fn() }));
+const adbState = vi.hoisted(() => ({ useAdb: vi.fn(), disconnect: vi.fn() }));
 const scanState = vi.hoisted(() => ({ scanPackages: vi.fn() }));
 const storeState = vi.hoisted(() => ({ loadScan: vi.fn(), saveScan: vi.fn() }));
 vi.mock('../../app/adb-context', () => ({ useAdb: adbState.useAdb }));
@@ -87,7 +87,7 @@ function renderPage(connected: ConnectedDevice | null = device) {
     phase: connected ? 'ready' : 'idle',
     failure: null,
     connect: vi.fn(),
-    disconnect: vi.fn(),
+    disconnect: adbState.disconnect,
     clearFailure: vi.fn(),
   });
   const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity, retry: false } } });
@@ -106,6 +106,7 @@ function renderPage(connected: ConnectedDevice | null = device) {
 
 describe('AuditPage', () => {
   beforeEach(() => {
+    adbState.disconnect.mockReset();
     storeState.loadScan.mockReset();
     storeState.loadScan.mockResolvedValue(null);
     storeState.saveScan.mockReset();
@@ -126,6 +127,7 @@ describe('AuditPage', () => {
     await user.click(await screen.findByRole('button', { name: /开始扫描/ }));
     expect(await screen.findByText('USB 连接已中断')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '重新连接' })).toBeInTheDocument();
+    expect(adbState.disconnect).toHaveBeenCalled();
   });
 
   it('连接后恢复 OPFS 中的最近扫描', async () => {

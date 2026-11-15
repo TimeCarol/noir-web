@@ -5,7 +5,7 @@
  * 约束: 扫描只在用户点击后开始, 取消时立即中止 ADB 流
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.2
+ * 版本: v1.3
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -68,7 +68,7 @@ const RISK_COLORS: Record<Recommendation['risk'], string> = {
 
 /** AuditPage 管理一次扫描的输入, 进度, 结果和导出 */
 export default function AuditPage() {
-  const { device } = useAdb();
+  const { device, disconnect } = useAdb();
   const [status, setStatus] = useState<ScanStatus>('idle');
   const [progress, setProgress] = useState<ScanProgress | null>(null);
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -102,10 +102,11 @@ export default function AuditPage() {
     if (device || status !== 'running') return;
     abortReasonRef.current = 'connection';
     controllerRef.current?.abort();
+    disconnect();
     setStatus('error');
     setConnectionLost(true);
     setError('USB 连接已中断, 请重新连接设备后重试');
-  }, [device, status]);
+  }, [device, status, disconnect]);
 
   const rows = useMemo(() => {
     if (!result) return [];
@@ -171,6 +172,7 @@ export default function AuditPage() {
     } catch (scanError) {
       if (controllerRef.current !== controller) return;
       if (abortReasonRef.current === 'connection' || scanError instanceof DeviceDisconnectedError) {
+        disconnect();
         setStatus('error');
         setConnectionLost(true);
         setError('USB 连接已中断, 请重新连接设备后重试');
