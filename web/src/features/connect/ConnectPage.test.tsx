@@ -43,6 +43,26 @@ const info: DeviceInfo = {
   wifiMac: '8e:95:83:7b:de:9d',
   bluetoothMac: '4C:49:E3:D1:3D:92',
   usbDebugging: true,
+  buildTime: 'Thu Mar 13 13:54:20 UTC 2025',
+  deviceVersion: 'OS2.0.2.0.ULJCNXM',
+  securityPatch: '2025-03-01',
+  baseband: 'AT20-0718',
+  language: 'zh-CN',
+  timezone: 'Asia/Shanghai',
+  rooted: false,
+  uptime: '1 天 2 小时 3 分',
+  partitionLayout: 'A/B',
+  seamlessUpdates: true,
+  dynamicPartitions: true,
+  treble: true,
+  javaRuntime: 'ART 14',
+  javaVm: 'ART',
+  javaHeap: '512 MB',
+  kernelArch: 'aarch64',
+  kernelVersion: '5.10.1',
+  openGlEs: '3.2',
+  selinux: 'Enforcing',
+  openssl: 'OpenSSL 3.0.0',
 };
 
 /** renderPage 预置查询缓存并注入连接状态 */
@@ -97,6 +117,11 @@ describe('ConnectPage', () => {
     expect(screen.getByText('已开启')).toBeInTheDocument();
     expect(screen.getByText(info.fingerprint)).toBeInTheDocument();
     expect(screen.queryByText('谷歌广告ID')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '系统' })).toBeInTheDocument();
+    expect(screen.getByText('安全补丁级别')).toBeInTheDocument();
+    expect(screen.getByText('Project Treble')).toBeInTheDocument();
+    expect(screen.getByText('未 Root')).toBeInTheDocument();
+    expect(screen.getByText('OpenSSL 3.0.0')).toBeInTheDocument();
   });
 
   it('连接成功后停留在连接页', async () => {

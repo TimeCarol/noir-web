@@ -5,7 +5,7 @@
  * 约束: 连接只读取设备属性和包列表, 不执行任何写操作
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.5
+ * 版本: v1.6
  */
 import { Alert, Button, Card, Space, Steps, Tag, Typography } from 'antd';
 import { ReloadOutlined, UsbOutlined } from '@ant-design/icons';
@@ -14,6 +14,7 @@ import { useAdb } from '../../app/adb-context';
 import { hasWebUsb, isSecureContext } from '../../adb/connect';
 import { readAndStoreDeviceInfo, readAndStorePackages } from '../../storage/device-cache';
 import { DeviceSummary } from './DeviceSummary';
+import { SystemSummary } from './SystemSummary';
 
 /** ConnectPage 组合兼容性提示, 授权步骤和设备摘要 */
 export default function ConnectPage() {
@@ -122,6 +123,8 @@ export default function ConnectPage() {
         info={infoQuery.data}
         loading={Boolean(device) && infoQuery.isPending}
       />
+
+      {device && <SystemSummary info={infoQuery.data} loading={infoQuery.isPending} />}
     </div>
   );
 }

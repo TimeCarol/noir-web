@@ -87,7 +87,7 @@ noir-web/
         │   ├── NetworkStatus.tsx # 离线状态
         │   └── RouteSkeleton.tsx # 弱网骨架
         ├── features/
-        │   ├── connect/         # 连接页、设备摘要
+        │   ├── connect/         # 连接页、设备和系统摘要
         │   ├── apps/            # 包列表和搜索
         │   ├── audit/           # 审计、证据详情和导出
         │   └── roadmap/         # 当前范围和里程碑
