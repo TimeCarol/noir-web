@@ -17,6 +17,8 @@ export interface ConnectedDevice {
   serial: string;
   /** name 是设备产品名或型号, 可能为空 */
   name: string;
+  /** usbDevice 是 WebUSB 原始设备, 用于监听物理断开事件 */
+  usbDevice?: USBDevice;
 }
 
 /** DeviceInfo 是只读设备快照, 空字符串表示属性读取失败或设备未提供 */

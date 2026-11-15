@@ -73,6 +73,7 @@ export async function authenticateAdbDevice(device: AdbDaemonWebUsbDevice): Prom
       adb: new Adb(transport),
       serial: device.serial || 'android',
       name: device.name || device.serial || 'Android 设备',
+      usbDevice: device.raw,
     };
   } catch (error) {
     // 认证失败时释放已 claim 的 USB 接口, 否则重新连接会一直报 DeviceBusyError

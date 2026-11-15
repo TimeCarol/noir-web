@@ -6,7 +6,7 @@
  * 约束: ADB transport 只由本 Provider 释放, 断开时清理设备查询缓存
  * 作者: timecarol
  * 日期: 2026-11-15 22:06
- * 版本: v1.2
+ * 版本: v1.3
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -91,11 +91,35 @@ export function AdbProvider({ children }: { children: ReactNode }) {
       setDevice(null);
       setPhase('idle');
       setFailure(describeDisconnectedFailure());
+      queryClient.removeQueries({ queryKey: ['packages'] });
+      queryClient.removeQueries({ queryKey: ['device-info'] });
     });
     return () => {
       active = false;
     };
-  }, [device]);
+  }, [device, queryClient]);
+
+  useEffect(() => {
+    if (!device) return;
+    const usb = typeof navigator === 'undefined' ? undefined : navigator.usb;
+    if (!usb) return;
+    const handleDisconnect = (event: Event) => {
+      const target = (event as Event & { device?: USBDevice }).device;
+      if (!target) return;
+      const sameDevice = device.usbDevice
+        ? target === device.usbDevice || (Boolean(device.serial) && target.serialNumber === device.serial)
+        : Boolean(device.serial) && target.serialNumber === device.serial;
+      if (!sameDevice) return;
+      manualDisconnect.current = true;
+      setDevice(null);
+      setPhase('idle');
+      setFailure(describeDisconnectedFailure());
+      queryClient.removeQueries({ queryKey: ['packages'] });
+      queryClient.removeQueries({ queryKey: ['device-info'] });
+    };
+    usb.addEventListener('disconnect', handleDisconnect as EventListener);
+    return () => usb.removeEventListener('disconnect', handleDisconnect as EventListener);
+  }, [device, queryClient]);
 
   useEffect(() => {
     const current = device;
