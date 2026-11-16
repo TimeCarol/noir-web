@@ -47,6 +47,6 @@
 
 - [ ] DEX-level DeepScan signals
 - [ ] Optional `dex-decompiler` WASM mode
-- [ ] appops preview, apply and rollback
+- [x] appops preview, apply and rollback
 - [ ] Manual device and browser acceptance matrix
 - [ ] Deployment verification on HTTPS

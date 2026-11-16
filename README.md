@@ -2,7 +2,7 @@
 
 Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an Android privacy audit that runs entirely in the browser over Chrome WebUSB.
 
-> Status: **M1 verified, M2 implemented**. WebUSB connection, ADB authorization, permission/endpoint scanning, AXML manifest facts, risk scoring, recommendations and report exports were verified end-to-end on a Xiaomi MI 6, Android 14, Chrome 157 / macOS. M2 adds HTML export, report comparison, plan export and an OPFS AppFacts cache. DeepScan and appops are M3 work.
+> Status: **M1 verified, M2 implemented**. WebUSB connection, ADB authorization, permission/endpoint scanning, AXML manifest facts, risk scoring, recommendations and report exports were verified end-to-end on a Xiaomi MI 6, Android 14, Chrome 157 / macOS. M2 adds HTML export, report comparison, plan export and an OPFS AppFacts cache. M3 now includes appops preview, apply and rollback; DeepScan remains.
 >
 > This project is not affiliated with Verlintas.
 
@@ -14,7 +14,8 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 - System card: version, API level, build identity/time, security patch, baseband, locale, timezone, root, uptime, partition/seamless/dynamic updates, Treble, ART/JVM, kernel, OpenGL ES, SELinux and OpenSSL. Empty fields are hidden.
 - Self-contained HTML report export.
 - Report comparison page for two NOIR JSON files with added, removed, changed and unchanged apps.
-- Plan export with appops/rollback commands; commands are never executed automatically.
+- Plan export with appops/rollback commands.
+- Device action card for appops preview, explicit apply and rollback, with an OPFS action log.
 - OPFS AppFacts cache keyed by package, APK path, size and mtime; unchanged APKs are skipped on later scans.
 - Connecting stays on the connect page; the application inventory is a separate page.
 - Base APK inventory: package name and APK path from `pm list packages -f`.
@@ -37,7 +38,6 @@ Unofficial web port of [Verlintas/NOIR](https://github.com/Verlintas/NOIR): an A
 ## What is not implemented yet
 
 - DeepScan signals and the optional `dex-decompiler` WASM mode
-- appops preview, apply and rollback
 - Windows WinUSB and Linux udev acceptance matrices
 
 ## Stack
@@ -92,9 +92,9 @@ All device data stays in the browser. There is no backend, telemetry, remote fon
 
 ## Verification
 
-GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 79 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
+GitHub Actions runs the same full suite on `master` pushes and pull requests. `bash scripts/test.sh full` passes the Ant Design import check, TypeScript type check, Oxlint, 85 unit/component tests, the production build, the 39-viewport browser matrix, offline reload and weak 3G checks.
 
-The production bundle is 410 KiB gzip across JS/CSS/HTML, has no source maps, and ships 36 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 425 KiB or a source map appears.
+The production bundle is 415 KiB gzip across JS/CSS/HTML, has no source maps, and ships 36 precompressed `.gz`/`.br` files. `web/scripts/check-build.mjs` fails the build if gzip exceeds 425 KiB or a source map appears.
 
 Chrome DevTools checks on the dev and production builds:
 

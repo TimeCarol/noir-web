@@ -73,7 +73,7 @@
 
 已运行:
 
-- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 79 项组件/单元测试, production build, gzip/brotli 预压缩, 410 KiB gzip (预算 425 KiB)
+- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 85 项组件/单元测试, production build, gzip/brotli 预压缩, 415 KiB gzip (预算 425 KiB)
 - `bash scripts/test.sh viewports`: 39 个视口通过, 离线重载和 3G 弱网首屏通过
 - 真机 WebUSB 全量审计: Xiaomi MI 6, Android 14, SDK 34, Chrome 157 / macOS; 352 个包, 161 个候选应用, 11,701 个端点, 44 条建议; 全量扫描约 8 分钟
 - 真机 UI: 审计进度, 取消, 应用详情展开, 处置建议, 域名三档和报告导出按钮可用; 修复设备端脚本包名变量后, 进度按包递增; 161 个应用的 Manifest 由真机 base64 传输后解析
@@ -112,3 +112,22 @@
 - 两份 NOIR JSON 报告的应用级新增/移除/变化对比
 - 带 appops 和回滚命令的 plan.txt 导出
 - OPFS AppFacts 缓存, 按包名, APK 路径, size 和 mtime 失效
+
+## 2026-11-16 M3 appops 本地记录
+
+已运行:
+
+- `npm test`: 85 项测试通过
+- production build gzip 415 KiB, 预算 425 KiB
+- appops 解析, 写入失败识别, 动作生成和命令格式测试通过
+
+已实现:
+
+- `GET_USAGE_STATS` 和 `PROJECT_MEDIA` 的当前模式读取
+- 设备处置卡片, 逐项命令预览, 明确确认后应用
+- 修改前模式写入 OPFS action log, 支持回滚
+- appops 权限不足时保留设备错误文本, 不伪装成功
+
+未运行:
+
+- 真机 appops set/rollback; 需要用户明确确认后执行

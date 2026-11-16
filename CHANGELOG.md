@@ -23,6 +23,7 @@
 - System card with version, build, security, partition, runtime, kernel and graphics facts
 - Self-contained HTML report export
 - Plan export with appops and rollback commands
+- Device action card with appops preview, apply and rollback plus an OPFS action log
 - Report comparison page for two NOIR JSON files
 - OPFS AppFacts cache with APK path, size and mtime invalidation
 - Hide device and system cards until a device is connected

@@ -5,7 +5,7 @@
  * 约束: 扫描只在用户点击后开始, 取消时立即中止 ADB 流
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.5
+ * 版本: v1.6
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -48,8 +48,10 @@ import {
 } from '../../core/models';
 import { domainExport, downloadName, reportCsv, reportJson, reportMarkdown } from '../../core/report';
 import { scanPackages, type ScanProgress } from '../../core/scan';
+import { appOpActions } from '../../core/actions';
 import { trackersFromEndpoints } from '../../core/trackers';
 import { AppDetail } from './AppDetail';
+import { ActionCard } from './ActionCard';
 
 type ScanStatus = 'idle' | 'running' | 'done' | 'error';
 
@@ -120,6 +122,7 @@ export default function AuditPage() {
   }, [result, search]);
 
   const domains = useMemo(() => result ? domainExport(result) : null, [result]);
+  const actions = useMemo(() => result ? appOpActions(result.recommendations) : [], [result]);
   const running = status === 'running';
   const ready = Boolean(device && infoQuery.data && packagesQuery.data) && !running;
   const endpointCount = result?.apps.reduce((sum, app) => sum + app.endpoints.length, 0) ?? 0;
@@ -352,6 +355,10 @@ export default function AuditPage() {
               locale={{ emptyText: '无建议' }}
             />
           </Card>
+
+          {device && actions.length > 0 && (
+            <ActionCard device={device} serial={result.serial} user={result.meta.user} actions={actions} />
+          )}
 
           <Card
             title="应用"
