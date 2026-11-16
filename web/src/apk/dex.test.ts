@@ -8,7 +8,7 @@
  * 版本: v1.0
  */
 import { describe, expect, it } from 'vitest';
-import { urlsFromDex } from './dex';
+import { scanDex, urlsFromDex } from './dex';
 
 describe('urlsFromDex', () => {
   it('提取完整 URL 并去重', () => {
@@ -35,5 +35,11 @@ describe('urlsFromDex', () => {
 
   it('没有 URL 时返回空列表', () => {
     expect(urlsFromDex([new TextEncoder().encode('plain dex strings')])).toEqual([]);
+  });
+
+  it('提取 DEX 字符串级风险信号', () => {
+    const text = ['DexClassLoader', 'content://sms', 'getDeviceId', 'MediaProjection'].join('\u0000');
+    const result = scanDex([new TextEncoder().encode(text)]);
+    expect(result.signals).toEqual(expect.arrayContaining(['dynamic-load', 'sms', 'device-id', 'screen-capture']));
   });
 });

@@ -91,6 +91,8 @@ function appJson(app: AppEntry) {
     uploadEndpoints: upload,
     commandEndpoints: command,
     trackers: trackersFromEndpoints(app.endpoints),
+    deepSignals: app.deepSignals ?? [],
+    deepRisk: app.deepRisk ?? 0,
     apkPaths: app.apkPaths,
     manifest: app.manifest,
   };
@@ -154,6 +156,7 @@ export function reportMarkdown(result: ScanResult): string {
     lines.push(`- category: ${CATEGORY_LABELS[app.category]} · vendor: ${app.vendor ?? 'unknown'} · shared uid: ${app.sharedUid ?? '—'}`);
     lines.push(`- apk: ${app.apkPaths.map(path => `\`${path}\``).join(', ') || '—'}`);
     if (app.dataTypes.length > 0) lines.push(`- data: ${app.dataTypes.map(type => DATA_TYPE_LABELS[type]).join(', ')}`);
+    if (app.deepSignals?.length) lines.push(`- dex signals: ${app.deepSignals.join(', ')} (risk ${app.deepRisk ?? 0})`);
     if (app.manifest) {
       const facts = app.manifest;
       const exported = facts.components.filter(component => component.exported && component.enabled && component.permission === null);
@@ -178,7 +181,7 @@ export function reportCsv(result: ScanResult): string {
     'package', 'uid', 'system', 'debuggable', 'score',
     'category', 'category_key', 'vendor', 'installer', 'shared_uid',
     'data_types', 'data_type_keys', 'permissions',
-    'upload_hosts', 'command_hosts', 'endpoints', 'trackers', 'exported_without_permission',
+    'upload_hosts', 'command_hosts', 'endpoints', 'trackers', 'deep_signals', 'deep_risk', 'exported_without_permission',
   ];
   const rows = [header.map(csvField).join(',')];
   for (const app of result.apps) {
@@ -194,6 +197,8 @@ export function reportCsv(result: ScanResult): string {
       app.endpoints.filter(isCommand).join('; '),
       app.endpoints.join('; '),
       trackersFromEndpoints(app.endpoints).join('; '),
+      (app.deepSignals ?? []).join('; '),
+      String(app.deepRisk ?? 0),
       String(exported),
     ].map(csvField).join(','));
   }

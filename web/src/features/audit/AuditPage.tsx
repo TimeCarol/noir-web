@@ -266,6 +266,7 @@ export default function AuditPage() {
 
   const appColumns: TableColumnsType<AppEntry> = [
     { title: '分数', dataIndex: 'score', key: 'score', width: 80, sorter: (left, right) => left.score - right.score },
+    { title: '深度', dataIndex: 'deepRisk', key: 'deepRisk', width: 80, render: risk => risk ? <Tag color={risk >= 10 ? 'red' : 'gold'}>{risk}</Tag> : '—' },
     { title: '包名', dataIndex: 'pkg', key: 'pkg', width: 280, render: pkg => <Typography.Text copyable={{ text: pkg, tooltips: ['复制包名', '已复制'] }} ellipsis={{ tooltip: pkg }} style={{ maxWidth: '100%' }}>{pkg}</Typography.Text> },
     { title: '类别', dataIndex: 'category', key: 'category', width: 120, render: category => <Tag>{CATEGORY_LABELS[category as AppEntry['category']]}</Tag> },
     { title: '厂商', dataIndex: 'vendor', key: 'vendor', width: 110, render: vendor => vendor ?? '—' },

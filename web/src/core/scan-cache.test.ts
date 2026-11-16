@@ -39,7 +39,7 @@ describe('scanPackages app facts cache', () => {
   it('命中缓存时不调用设备端 APK 扫描', async () => {
     cache.load.mockResolvedValue(new Map([['com.example.alpha', {
       packageName: 'com.example.alpha', apkPath: '/data/app/base.apk', size: 123, mtime: 456,
-      urls: ['https://cached.example.com/report'], manifest: null, savedAt: '2026-11-16T00:00:00.000Z',
+      urls: ['https://cached.example.com/report'], signals: [], manifest: null, savedAt: '2026-11-16T00:00:00.000Z',
     }]]));
     cache.save.mockResolvedValue(true);
     const stream = vi.fn(async (command: string, onLine: (line: string) => void) => {

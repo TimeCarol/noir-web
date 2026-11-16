@@ -130,6 +130,8 @@ export interface AppEntry {
   sharedUid: string | null;
   dataTypes: DataType[];
   leaks: Partial<Record<DataType, string[]>>;
+  deepSignals?: string[];
+  deepRisk?: number;
   manifest: ManifestFacts | null;
   apkPaths: string[];
 }

@@ -117,6 +117,9 @@ function appDetail(app: AppEntry): string {
   const endpoints = app.endpoints.length > 0
     ? `<ul>${app.endpoints.slice(0, 50).map(url => `<li><code>${escapeHtml(url)}</code></li>`).join('')}${app.endpoints.length > 50 ? `<li>另有 ${app.endpoints.length - 50} 个</li>` : ''}</ul>`
     : '';
+  const deepSignals = app.deepSignals?.length
+    ? `<p>DEX 信号: ${app.deepSignals.map(signal => escapeHtml(signal)).join(', ')} (risk ${app.deepRisk ?? 0})</p>`
+    : '';
   const manifestText = manifest
     ? `<p>Manifest: targetSdk=${escapeHtml(manifest.targetSdk ?? '—')} · cleartext=${boolText(manifest.cleartext)} · backup=${boolText(manifest.allowBackup)} · exported-without-permission=${exported.length}</p>`
     : '';
@@ -125,7 +128,7 @@ function appDetail(app: AppEntry): string {
     <p>UID ${escapeHtml(app.uid)} · ${app.isSystem ? '系统' : '用户'} · 安装来源 ${escapeHtml(app.installer ?? '—')} · 共享 UID ${escapeHtml(app.sharedUid ?? '—')}</p>
     ${leaks ? `<p>泄露路径: ${leaks}</p>` : ''}
     ${trackers.length > 0 ? `<p>SDK: ${trackers.map(escapeHtml).join(', ')}</p>` : ''}
-    ${permissions}${manifestText}${endpoints}
+    ${permissions}${deepSignals}${manifestText}${endpoints}
   </div></details>`;
 }
 

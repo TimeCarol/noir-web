@@ -45,7 +45,7 @@
 
 ## M3
 
-- [ ] DEX-level DeepScan signals
+- [x] DEX-level DeepScan signals
 - [ ] Optional `dex-decompiler` WASM mode
 - [x] appops preview, apply and rollback
 - [ ] Manual device and browser acceptance matrix

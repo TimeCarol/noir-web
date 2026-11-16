@@ -73,7 +73,7 @@
 
 已运行:
 
-- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 85 项组件/单元测试, production build, gzip/brotli 预压缩, 415 KiB gzip (预算 425 KiB)
+- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 86 项组件/单元测试, production build, gzip/brotli 预压缩, 416 KiB gzip (预算 425 KiB)
 - `bash scripts/test.sh viewports`: 39 个视口通过, 离线重载和 3G 弱网首屏通过
 - 真机 WebUSB 全量审计: Xiaomi MI 6, Android 14, SDK 34, Chrome 157 / macOS; 352 个包, 161 个候选应用, 11,701 个端点, 44 条建议; 全量扫描约 8 分钟
 - 真机 UI: 审计进度, 取消, 应用详情展开, 处置建议, 域名三档和报告导出按钮可用; 修复设备端脚本包名变量后, 进度按包递增; 161 个应用的 Manifest 由真机 base64 传输后解析
@@ -113,13 +113,15 @@
 - 带 appops 和回滚命令的 plan.txt 导出
 - OPFS AppFacts 缓存, 按包名, APK 路径, size 和 mtime 失效
 
-## 2026-11-16 M3 appops 本地记录
+## 2026-11-16 M3 appops 与 DeepScan 本地记录
 
 已运行:
 
-- `npm test`: 85 项测试通过
-- production build gzip 415 KiB, 预算 425 KiB
-- appops 解析, 写入失败识别, 动作生成和命令格式测试通过
+- `npm test`: 86 项测试通过
+- production build gzip 416 KiB, 预算 425 KiB
+- appops 解析, 写入失败识别, 动作生成, action log 和命令格式测试通过
+- DEX URL 和字符串信号测试通过
+- 真机 appops set/rollback: `com.xiaomi.aiasst.service GET_USAGE_STATS` 从 `default` 设为 `ignore`, 读取确认后回滚为 `default`, 设备状态已恢复
 
 已实现:
 
@@ -127,7 +129,11 @@
 - 设备处置卡片, 逐项命令预览, 明确确认后应用
 - 修改前模式写入 OPFS action log, 支持回滚
 - appops 权限不足时保留设备错误文本, 不伪装成功
+- DEX string-level DeepScan: 设备端一次 `strings` 扫描同时提取 URL 和信号
+- 报告 JSON/Markdown/CSV/HTML 和应用详情包含 DeepScan 信号与风险分
 
 未运行:
 
-- 真机 appops set/rollback; 需要用户明确确认后执行
+- 可选 `dex-decompiler` WASM 模式
+- 真机/浏览器完整验收矩阵
+- HTTPS 部署验证

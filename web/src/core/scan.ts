@@ -16,6 +16,7 @@ import { classifyCategory, classifyVendor } from './classifier';
 import { dataTypes, leaks } from './exposure';
 import type { AppEntry, ReportMeta, ScanResult } from './models';
 import { score, sensitivePermissions } from './rules';
+import { deepRisk } from './deepscan';
 import { loadAppFacts, saveAppFacts, type AppFactsRecord } from '../storage/app-facts';
 
 /** ScanError 表示扫描前置条件失败, 错误信息可直接展示给用户 */
@@ -117,9 +118,10 @@ export async function scanPackages(input: ScanInput, options: ScanOptions = {}):
       signal: options.signal,
       onProgress: (done, total, packageName) => progress('scan', cached.size + done, targets.length, packageName),
     })
-    : { urls: new Map(), manifests: new Map(), failed: new Set() };
+    : { urls: new Map(), signals: new Map(), manifests: new Map(), failed: new Set() };
   for (const [pkg, record] of cached) {
     scan.urls.set(pkg, record.urls);
+    scan.signals.set(pkg, record.signals ?? []);
     if (record.manifest) scan.manifests.set(pkg, record.manifest);
   }
   const records: AppFactsRecord[] = [...cached.values()];
@@ -132,6 +134,7 @@ export async function scanPackages(input: ScanInput, options: ScanOptions = {}):
       size: stamp.size,
       mtime: stamp.mtime,
       urls: scan.urls.get(target.packageName) ?? [],
+      signals: scan.signals.get(target.packageName) ?? [],
       manifest: scan.manifests.get(target.packageName) ?? null,
       savedAt: new Date().toISOString(),
     });
@@ -158,10 +161,13 @@ export async function scanPackages(input: ScanInput, options: ScanOptions = {}):
       sharedUid: facts.sharedUser,
       dataTypes: dataTypes(permissions),
       leaks: {},
+      deepSignals: scan.signals.get(pkg) ?? [],
+      deepRisk: 0,
       manifest: scan.manifests.get(pkg) ?? null,
       apkPaths: [entry.apkPath],
     };
     app.leaks = leaks(app);
+    app.deepRisk = deepRisk(app.deepSignals ?? []);
     return app;
   })
     .filter(app => app.score >= minScore)
