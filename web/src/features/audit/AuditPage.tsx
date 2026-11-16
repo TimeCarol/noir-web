@@ -5,7 +5,7 @@
  * 约束: 扫描只在用户点击后开始, 取消时立即中止 ADB 流
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.5
+ * 版本: v1.7
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -28,6 +28,7 @@ import {
   SafetyCertificateOutlined,
   SearchOutlined,
   StopOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -47,9 +48,14 @@ import {
   type ScanResult,
 } from '../../core/models';
 import { domainExport, downloadName, reportCsv, reportJson, reportMarkdown } from '../../core/report';
+import { reportHtml } from '../../core/report-html';
 import { scanPackages, type ScanProgress } from '../../core/scan';
+import { appOpActions } from '../../core/actions';
 import { trackersFromEndpoints } from '../../core/trackers';
 import { AppDetail } from './AppDetail';
+import { ActionCard } from './ActionCard';
+import { deepScanApps } from '../../adb/deep-scan';
+import { deepRisk } from '../../core/deepscan';
 
 type ScanStatus = 'idle' | 'running' | 'done' | 'error';
 
@@ -77,6 +83,9 @@ export default function AuditPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [connectionLost, setConnectionLost] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [deepScanning, setDeepScanning] = useState(false);
+  const [deepProgress, setDeepProgress] = useState<{ done: number; total: number } | null>(null);
+  const [deepError, setDeepError] = useState<string | null>(null);
   const [minScore, setMinScore] = useState(0);
   const [search, setSearch] = useState('');
   const controllerRef = useRef<AbortController | null>(null);
@@ -120,6 +129,7 @@ export default function AuditPage() {
   }, [result, search]);
 
   const domains = useMemo(() => result ? domainExport(result) : null, [result]);
+  const actions = useMemo(() => result ? appOpActions(result.recommendations) : [], [result]);
   const running = status === 'running';
   const ready = Boolean(device && infoQuery.data && packagesQuery.data) && !running;
   const endpointCount = result?.apps.reduce((sum, app) => sum + app.endpoints.length, 0) ?? 0;
@@ -147,6 +157,8 @@ export default function AuditPage() {
     setNotice(null);
     setConnectionLost(false);
     setRestored(false);
+    setDeepError(null);
+    setDeepProgress(null);
     abortReasonRef.current = null;
     setProgress({ phase: 'dumpsys', done: 0, total: 0 });
     const serial = device.serial;
@@ -191,9 +203,33 @@ export default function AuditPage() {
     }
   }
 
-  async function downloadHtml() {
+  async function runDeepScan() {
+    if (!device || !result || result.apps.length === 0) return;
+    setDeepScanning(true);
+    setDeepError(null);
+    setDeepProgress({ done: 0, total: Math.min(20, result.apps.length) });
+    try {
+      const targets = result.apps.slice(0, 20);
+      const signals = await deepScanApps(adbShell(device.adb), targets, {
+        onProgress: value => setDeepProgress({ done: value.done, total: value.total }),
+      });
+      const apps = result.apps.map(app => {
+        const found = signals.get(app.pkg);
+        return found ? { ...app, deepSignals: found, deepRisk: deepRisk(found) } : app;
+      });
+      const next = { ...result, apps };
+      setResult(next);
+      await saveScan(device.serial, next).catch(() => false);
+    } catch (deepScanError) {
+      setDeepError(errorText(deepScanError));
+    } finally {
+      setDeepScanning(false);
+      setDeepProgress(null);
+    }
+  }
+
+  function downloadHtml() {
     if (!result) return;
-    const { reportHtml } = await import('../../core/report-html');
     downloadText(reportHtml(result), downloadName(result, 'html'), 'text/html');
   }
 
@@ -263,6 +299,7 @@ export default function AuditPage() {
 
   const appColumns: TableColumnsType<AppEntry> = [
     { title: '分数', dataIndex: 'score', key: 'score', width: 80, sorter: (left, right) => left.score - right.score },
+    { title: '深度', dataIndex: 'deepRisk', key: 'deepRisk', width: 80, render: risk => risk ? <Tag color={risk >= 10 ? 'red' : 'gold'}>{risk}</Tag> : '—' },
     { title: '包名', dataIndex: 'pkg', key: 'pkg', width: 280, render: pkg => <Typography.Text copyable={{ text: pkg, tooltips: ['复制包名', '已复制'] }} ellipsis={{ tooltip: pkg }} style={{ maxWidth: '100%' }}>{pkg}</Typography.Text> },
     { title: '类别', dataIndex: 'category', key: 'category', width: 120, render: category => <Tag>{CATEGORY_LABELS[category as AppEntry['category']]}</Tag> },
     { title: '厂商', dataIndex: 'vendor', key: 'vendor', width: 110, render: vendor => vendor ?? '—' },
@@ -353,9 +390,13 @@ export default function AuditPage() {
             />
           </Card>
 
+          {device && actions.length > 0 && (
+            <ActionCard device={device} serial={result.serial} user={result.meta.user} actions={actions} />
+          )}
+
           <Card
             title="应用"
-            extra={<Space wrap><Tag>{rows.length} 行</Tag></Space>}
+            extra={<Space wrap><Tag>{rows.length} 行</Tag><Button size="small" icon={<ThunderboltOutlined />} loading={deepScanning} disabled={!device || result.apps.length === 0} onClick={() => void runDeepScan()}>DeepScan</Button>{deepProgress && <Typography.Text type="secondary">{deepProgress.done}/{deepProgress.total}</Typography.Text>}</Space>}
           >
             <div className="audit-app-toolbar">
               <Input
@@ -370,10 +411,11 @@ export default function AuditPage() {
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportJson(result), downloadName(result, 'json'), 'application/json')}>JSON</Button>
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportMarkdown(result), downloadName(result, 'md'), 'text/markdown')}>Markdown</Button>
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportCsv(result), downloadName(result, 'csv'), 'text/csv')}>CSV</Button>
-                <Button icon={<DownloadOutlined />} onClick={() => void downloadHtml()}>HTML</Button>
+                <Button icon={<DownloadOutlined />} onClick={downloadHtml}>HTML</Button>
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportPlan(result), downloadName(result, 'txt'), 'text/plain')}>计划</Button>
               </Space>
             </div>
+            {deepError && <Alert type="error" showIcon title="DeepScan 失败" description={deepError} />}
             <Table<AppEntry>
               rowKey="pkg"
               columns={appColumns}

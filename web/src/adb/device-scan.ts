@@ -5,7 +5,7 @@
  * 约束: 快路径只传输 URL 和 base64 Manifest, 不传输 APK 主体
  * 作者: timecarol
  * 日期: 2026-11-15 23:50
- * 版本: v1.0
+ * 版本: v1.1
  */
 // oxlint-disable no-await-in-loop -- ADB 命令和流式读取必须顺序执行
 import type { PackageEntry } from './types';

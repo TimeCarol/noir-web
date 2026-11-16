@@ -13,6 +13,7 @@ noir-web/
 ├── DESIGN.md                    # NOIR Web 设计提案
 ├── README.md                    # 项目状态、运行和部署
 ├── docs/
+│   ├── acceptance-matrix.md      # 真机/浏览器/部署验收
 │   ├── agent/
 │   │   ├── README.md            # Agent 入口和验证边界
 │   │   ├── domain-rules.md      # WebUSB、ADB、APK、规则、部署

@@ -10,6 +10,7 @@
 import { Descriptions, Space, Tag, Typography, type DescriptionsProps } from 'antd';
 import { DATA_TYPE_LABELS, type AppEntry, type DataType } from '../../core/models';
 import { trackersFromEndpoints } from '../../core/trackers';
+import { deepSignalLabel } from '../../core/deepscan';
 
 /** AppDetail 渲染一个应用的完整证据 */
 export function AppDetail({ app }: { app: AppEntry }) {
@@ -56,6 +57,12 @@ export function AppDetail({ app }: { app: AppEntry }) {
               </li>
             ))}
           </ul>
+        </section>
+      )}
+      {(app.deepSignals?.length ?? 0) > 0 && (
+        <section className="audit-detail-section">
+          <h2>DEX 信号</h2>
+          <Space size={[4, 4]} wrap>{app.deepSignals!.map(signal => <Tag key={signal} color="gold">{deepSignalLabel(signal)}</Tag>)}</Space>
         </section>
       )}
       {app.permissions.length > 0 && (

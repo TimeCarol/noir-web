@@ -9,6 +9,7 @@
 | [../antd-best-practices.md](../antd-best-practices.md) | Ant Design 6.7.0 官方最佳实践的落地规则 |
 | [../react-ui.md](../react-ui.md) | React、Ant Design、Radix 色阶、排版、响应式和文案 |
 | [../project-layout.md](../project-layout.md) | 目录职责、依赖边界和测试放置 |
+| [../acceptance-matrix.md](../acceptance-matrix.md) | 真机、浏览器、自动化和部署验收矩阵 |
 | [../../ARCHITECTURE.md](../../ARCHITECTURE.md) | 浏览器内 ADB 和后续扫描层的总体结构 |
 | [../../DESIGN.md](../../DESIGN.md) | NOIR Web 的完整设计提案和里程碑 |
 
@@ -28,4 +29,4 @@
 
 ## 当前范围
 
-M0 只验证连接链路: WebUSB 授权、ADB 认证、设备属性和基础 APK 清单. 权限、端点、Manifest、风险评分、报告、appops 和 DeepScan 都在后续阶段.
+M0 的 WebUSB 连接、ADB 认证和设备/包清单已通过. M1 完成权限、端点、AXML 和风险报告. M2 完成 HTML 对比、报告 diff、plan 和 AppFacts 缓存. M3 完成 appops 处置、DEX DeepScan、真机/浏览器验收矩阵和 HTTPS 配置; 可选 dex-decompiler WASM、正式域名 HTTPS 和 Windows/Linux 矩阵仍待执行.

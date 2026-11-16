@@ -17,6 +17,7 @@ export interface AppFactsRecord {
   size: number;
   mtime: number;
   urls: string[];
+  signals?: string[];
   manifest: ManifestFacts | null;
   savedAt: string;
 }

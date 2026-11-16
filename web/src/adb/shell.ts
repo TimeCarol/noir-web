@@ -5,7 +5,7 @@
  * 约束: 命令由调用方完整拼接, 路径参数必须经过 quote; 中断必须终止底层 socket
  * 作者: timecarol
  * 日期: 2026-11-16 00:40
- * 版本: v1.1
+ * 版本: v1.2
  */
 // oxlint-disable no-await-in-loop -- shell 输出必须顺序读取
 import type { Adb } from '@yume-chan/adb';
@@ -57,7 +57,7 @@ export function isShellInterruption(error: unknown): boolean {
  */
 export function adbShell(adb: Adb, options: ShellOptions = {}): Shell {
   const commandTimeoutMs = options.commandTimeoutMs ?? 60_000;
-  const streamIdleTimeoutMs = options.streamIdleTimeoutMs ?? 45_000;
+  const streamIdleTimeoutMs = options.streamIdleTimeoutMs ?? 180_000;
 
   /** disconnectRace 返回一个在 USB 断开时拒绝的 promise */
   function disconnectRace(): Promise<never> {

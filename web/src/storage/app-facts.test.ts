@@ -28,8 +28,8 @@ describe('app facts cache', () => {
       version: 1,
       savedAt: '2026-11-16T00:00:00.000Z',
       records: [
-        { packageName: 'com.example.alpha', apkPath: '/data/app/base.apk', size: 1, mtime: 2, urls: [], manifest: null, savedAt: 'x' },
-        { packageName: '', apkPath: '/bad', size: 0, mtime: 0, urls: [], manifest: null, savedAt: 'x' },
+        { packageName: 'com.example.alpha', apkPath: '/data/app/base.apk', size: 1, mtime: 2, urls: [], signals: [], manifest: null, savedAt: 'x' },
+        { packageName: '', apkPath: '/bad', size: 0, mtime: 0, urls: [], signals: [], manifest: null, savedAt: 'x' },
       ],
     });
     const facts = await loadAppFacts('SERIAL-1');
@@ -41,7 +41,7 @@ describe('app facts cache', () => {
     opfs.writeJson.mockResolvedValue(true);
     const ok = await saveAppFacts('SERIAL-1', [{
       packageName: 'com.example.alpha', apkPath: '/data/app/base.apk', size: 1, mtime: 2,
-      urls: ['https://example.com/report'], manifest: null, savedAt: '2026-11-16T00:00:00.000Z',
+      urls: ['https://example.com/report'], signals: [], manifest: null, savedAt: '2026-11-16T00:00:00.000Z',
     }]);
     expect(ok).toBe(true);
     expect(opfs.writeJson).toHaveBeenCalledWith(

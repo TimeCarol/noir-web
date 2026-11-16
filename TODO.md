@@ -45,8 +45,9 @@
 
 ## M3
 
-- [ ] DEX-level DeepScan signals
+- [x] DEX-level DeepScan signals
 - [ ] Optional `dex-decompiler` WASM mode
-- [ ] appops preview, apply and rollback
-- [ ] Manual device and browser acceptance matrix
-- [ ] Deployment verification on HTTPS
+- [x] appops preview, apply and rollback
+- [x] Manual device and browser acceptance matrix
+- [x] HTTPS deployment configuration and verifier
+- [ ] Formal HTTPS domain verification
