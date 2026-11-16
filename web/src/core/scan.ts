@@ -5,17 +5,18 @@
  * 约束: 候选必须同时具备 INTERNET 和至少一个已授予敏感权限
  * 作者: timecarol
  * 日期: 2026-11-15 23:50
- * 版本: v1.1
+ * 版本: v1.2
  */
 import type { DeviceInfo, PackageEntry } from '../adb/types';
 import { DeviceDisconnectedError, ShellTimeoutError, type Shell } from '../adb/shell';
 import { DumpsysParser, isDebuggableMeta, isSystemMeta, type PkgMeta } from '../adb/dumpsys';
-import { scanDeviceUrls } from '../adb/device-scan';
+import { readApkStamps, scanDeviceUrls, type ScanUrlsResult } from '../adb/device-scan';
 import { advise } from './advisor';
 import { classifyCategory, classifyVendor } from './classifier';
 import { dataTypes, leaks } from './exposure';
 import type { AppEntry, ReportMeta, ScanResult } from './models';
 import { score, sensitivePermissions } from './rules';
+import { loadAppFacts, saveAppFacts, type AppFactsRecord } from '../storage/app-facts';
 
 /** ScanError 表示扫描前置条件失败, 错误信息可直接展示给用户 */
 export class ScanError extends Error {
@@ -97,11 +98,45 @@ export async function scanPackages(input: ScanInput, options: ScanOptions = {}):
   }
 
   const targets = candidates.map(([, , entry]) => entry);
-  progress('scan', 0, targets.length);
-  const scan = await scanDeviceUrls(input.shell, targets, {
-    signal: options.signal,
-    onProgress: (done, total, packageName) => progress('scan', done, total, packageName),
-  });
+  const stamps = await readApkStamps(input.shell, targets);
+  const cached = new Map<string, AppFactsRecord>();
+  const fresh: PackageEntry[] = [];
+  const cache = await loadAppFacts(input.serial);
+  for (const target of targets) {
+    const record = cache.get(target.packageName);
+    const stamp = stamps.get(target.packageName);
+    if (record && stamp && record.apkPath === target.apkPath && record.size === stamp.size && record.mtime === stamp.mtime) {
+      cached.set(target.packageName, record);
+    } else {
+      fresh.push(target);
+    }
+  }
+  progress('scan', cached.size, targets.length);
+  const scan: ScanUrlsResult = fresh.length > 0
+    ? await scanDeviceUrls(input.shell, fresh, {
+      signal: options.signal,
+      onProgress: (done, total, packageName) => progress('scan', cached.size + done, targets.length, packageName),
+    })
+    : { urls: new Map(), manifests: new Map(), failed: new Set() };
+  for (const [pkg, record] of cached) {
+    scan.urls.set(pkg, record.urls);
+    if (record.manifest) scan.manifests.set(pkg, record.manifest);
+  }
+  const records: AppFactsRecord[] = [...cached.values()];
+  for (const target of fresh) {
+    const stamp = stamps.get(target.packageName);
+    if (!stamp || scan.failed.has(target.packageName)) continue;
+    records.push({
+      packageName: target.packageName,
+      apkPath: target.apkPath,
+      size: stamp.size,
+      mtime: stamp.mtime,
+      urls: scan.urls.get(target.packageName) ?? [],
+      manifest: scan.manifests.get(target.packageName) ?? null,
+      savedAt: new Date().toISOString(),
+    });
+  }
+  if (stamps.size > 0) await saveAppFacts(input.serial, records).catch(() => false);
 
   progress('report', targets.length, targets.length);
   const apps: AppEntry[] = candidates.map(([pkg, facts, entry]) => {

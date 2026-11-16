@@ -5,7 +5,7 @@
  * 约束: 扫描只在用户点击后开始, 取消时立即中止 ADB 流
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.3
+ * 版本: v1.5
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -37,6 +37,7 @@ import { readAndStoreDeviceInfo, readAndStorePackages } from '../../storage/devi
 import { loadScan, saveScan } from '../../storage/device-store';
 import { adbShell, DeviceDisconnectedError, isShellInterruption } from '../../adb/shell';
 import { downloadText } from '../../lib/download';
+import { reportPlan } from '../../core/plan';
 import { errorText } from '../../lib/errors';
 import {
   ACTION_LABELS,
@@ -188,6 +189,12 @@ export default function AuditPage() {
         setError(errorText(scanError));
       }
     }
+  }
+
+  async function downloadHtml() {
+    if (!result) return;
+    const { reportHtml } = await import('../../core/report-html');
+    downloadText(reportHtml(result), downloadName(result, 'html'), 'text/html');
   }
 
   function stopScan() {
@@ -363,6 +370,8 @@ export default function AuditPage() {
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportJson(result), downloadName(result, 'json'), 'application/json')}>JSON</Button>
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportMarkdown(result), downloadName(result, 'md'), 'text/markdown')}>Markdown</Button>
                 <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportCsv(result), downloadName(result, 'csv'), 'text/csv')}>CSV</Button>
+                <Button icon={<DownloadOutlined />} onClick={() => void downloadHtml()}>HTML</Button>
+                <Button icon={<DownloadOutlined />} onClick={() => downloadText(reportPlan(result), downloadName(result, 'txt'), 'text/plain')}>计划</Button>
               </Space>
             </div>
             <Table<AppEntry>

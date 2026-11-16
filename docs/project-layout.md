@@ -69,6 +69,7 @@ noir-web/
         │   ├── manifest.ts      # Manifest 事实
         │   └── remote-zip.ts    # tail/head ZIP 读取
         ├── storage/
+        │   ├── app-facts.ts       # APK 事实缓存
         │   ├── device-cache.ts    # 读取并写入设备快照
         │   ├── device-store.ts    # 设备/包/扫描结果
         │   └── opfs.ts            # OPFS JSON 和二进制读写
@@ -79,6 +80,8 @@ noir-web/
         │   ├── exposure.ts      # 数据类别和泄露路径
         │   ├── models.ts        # 报告数据边界
         │   ├── report.ts        # JSON/Markdown/CSV
+        │   ├── report-html.ts   # 自包含 HTML
+        │   ├── report-diff.ts   # 报告解析和差异
         │   ├── rules.ts         # 敏感权限和评分
         │   ├── scan.ts          # 扫描编排
         │   └── trackers.ts      # SDK 指纹
@@ -90,6 +93,7 @@ noir-web/
         │   ├── connect/         # 连接页、设备和系统摘要
         │   ├── apps/            # 包列表和搜索
         │   ├── audit/           # 审计、证据详情和导出
+        │   ├── diff/            # 两份报告对比
         │   └── roadmap/         # 当前范围和里程碑
         ├── lib/
         │   ├── download.ts      # 文本报告下载

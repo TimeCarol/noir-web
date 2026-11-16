@@ -39,6 +39,7 @@ function shellWith(lines: string[], failAfterFirst = false): Shell {
     },
     async text(command: string): Promise<string> {
       if (command.startsWith('which ')) return '/system/bin/unzip\n/system/bin/strings\n/system/bin/base64\n';
+      if (command.startsWith('stat -c')) return '';
       throw new Error(`unexpected command: ${command}`);
     },
     async stream(command: string, onLine: (line: string) => void): Promise<void> {

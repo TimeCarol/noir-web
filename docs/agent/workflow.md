@@ -73,11 +73,12 @@
 
 已运行:
 
-- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 71 项组件/单元测试, production build, gzip/brotli 预压缩, 402 KiB gzip (预算 410 KiB)
+- `bash scripts/test.sh fast`: Ant Design 导入检查, TypeScript 类型检查, Oxlint, 79 项组件/单元测试, production build, gzip/brotli 预压缩, 410 KiB gzip (预算 425 KiB)
 - `bash scripts/test.sh viewports`: 39 个视口通过, 离线重载和 3G 弱网首屏通过
 - 真机 WebUSB 全量审计: Xiaomi MI 6, Android 14, SDK 34, Chrome 157 / macOS; 352 个包, 161 个候选应用, 11,701 个端点, 44 条建议; 全量扫描约 8 分钟
 - 真机 UI: 审计进度, 取消, 应用详情展开, 处置建议, 域名三档和报告导出按钮可用; 修复设备端脚本包名变量后, 进度按包递增; 161 个应用的 Manifest 由真机 base64 传输后解析
 - 真机物理拔线: 连接页空闲状态拔掉 USB 后页头变为未连接, 设备/系统卡片消失, 显示设备已断开提示; 插回后可重新连接
+- 报告功能: HTML 导出, 两份 report.json 对比, OPFS AppFacts 缓存和 APK 时间戳失效逻辑
 - 真机连接页: 设备卡片显示 17 个字段, 系统卡片显示版本/构建/安全补丁/基带/分区/Treble/ART/内核/OpenGL ES/SELinux; 空广告 ID、运营商、Java Runtime 和 OpenSSL 自动隐藏
 - 同一 `scanPackages` 代码路径经 adb 定向扫描一个系统浏览器应用: 端点和 Manifest 组件均非空; 用于在浏览器自动化无法弹出 USB 选择器时验证解析链路
 - OPFS 真实浏览器验证: 在 127.0.0.1 Chrome 中写入并读取 JSON/设备扫描记录, 清理探针目录; `navigator.storage.getDirectory()` 可用
@@ -93,3 +94,21 @@
 - Windows WinUSB 和 Linux udev 矩阵
 - 长扫描期间的标签页节流和休眠
 - 真实物理拔线中途断开的 WebUSB 手工复验
+
+## 2026-11-16 M2 本地记录
+
+已运行:
+
+- `npm test`: 79 项测试通过
+- `npm run typecheck`, `npm run lint`, Ant Design 导入和废弃属性检查通过
+- production build gzip 410 KiB, 预算 425 KiB
+- 39 视口、离线重载和弱 3G 通过
+- Chrome 本地页面检查报告对比页, 5 项导航和 1440px 布局正常
+- 真实 MI 6 WebUSB 已复核扫描中断线、空闲拔线和重新连接
+
+已实现:
+
+- 自包含 HTML 报告
+- 两份 NOIR JSON 报告的应用级新增/移除/变化对比
+- 带 appops 和回滚命令的 plan.txt 导出
+- OPFS AppFacts 缓存, 按包名, APK 路径, size 和 mtime 失效

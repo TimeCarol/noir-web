@@ -35,13 +35,13 @@
 
 - [x] Risk dashboard and app detail
 - [x] Recommendations
-- [ ] Rollback plan
+- [x] Rollback plan
 - [x] JSON, Markdown and CSV export
-- [ ] HTML export
+- [x] HTML export
 - [x] DNS tracker, review and functional lists
-- [ ] Import two reports and diff
+- [x] Import two reports and diff
 - [x] OPFS device snapshots, package inventories and latest scan results
-- [ ] OPFS AppFacts cache with APK path, size and mtime
+- [x] OPFS AppFacts cache with APK path, size and mtime
 
 ## M3
 

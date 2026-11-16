@@ -5,7 +5,7 @@
  * 约束: 桌面侧栏和移动导航共享同一组路由, 不在页面里解释设计实现
  * 作者: timecarol
  * 日期: 2026-11-15 23:55
- * 版本: v1.7
+ * 版本: v1.8
  */
 import { Suspense, useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
 import { Button, ConfigProvider, Space } from 'antd';
@@ -14,6 +14,7 @@ import {
   AppstoreOutlined,
   CompassOutlined,
   DesktopOutlined,
+  DiffOutlined,
   DoubleLeftOutlined,
   DoubleRightOutlined,
   MoonOutlined,
@@ -36,6 +37,7 @@ import { RouteSkeleton } from '../components/RouteSkeleton';
 const ConnectPage = lazyWithRetry(() => import('../features/connect/ConnectPage'));
 const AppsPage = lazyWithRetry(() => import('../features/apps/AppsPage'));
 const AuditPage = lazyWithRetry(() => import('../features/audit/AuditPage'));
+const DiffPage = lazyWithRetry(() => import('../features/diff/DiffPage'));
 const RoadmapPage = lazyWithRetry(() => import('../features/roadmap/RoadmapPage'));
 
 const themes = {
@@ -45,10 +47,11 @@ const themes = {
 };
 const themeOrder: ThemeMode[] = ['system', 'light', 'dark'];
 const navigation = [
-  { key: '/connect', label: '连接设备', icon: <ApiOutlined /> },
-  { key: '/apps', label: '应用列表', icon: <AppstoreOutlined /> },
-  { key: '/audit', label: '隐私审计', icon: <SafetyCertificateOutlined /> },
-  { key: '/roadmap', label: '路线图', icon: <CompassOutlined /> },
+  { key: '/connect', label: '连接设备', short: '连接', icon: <ApiOutlined /> },
+  { key: '/apps', label: '应用列表', short: '应用', icon: <AppstoreOutlined /> },
+  { key: '/audit', label: '隐私审计', short: '审计', icon: <SafetyCertificateOutlined /> },
+  { key: '/diff', label: '报告对比', short: '报告', icon: <DiffOutlined /> },
+  { key: '/roadmap', label: '路线图', short: '路线', icon: <CompassOutlined /> },
 ];
 
 /** Shell 提供可收起的桌面导航和共享页面入口 */
@@ -117,7 +120,7 @@ function Shell({ themeMode, changeTheme }: { themeMode: ThemeMode; changeTheme: 
           </Space>
         </header>
         <nav className="mobile-navigation" id="mobile-navigation" aria-label="移动导航">
-          {navigation.map(item => <NavLink key={item.key} to={item.key}>{item.label}</NavLink>)}
+          {navigation.map(item => <NavLink key={item.key} to={item.key}>{item.short}</NavLink>)}
         </nav>
         <main className="app-content" aria-busy={busy}>
           <RouteBoundary>
@@ -126,6 +129,7 @@ function Shell({ themeMode, changeTheme }: { themeMode: ThemeMode; changeTheme: 
                 <Route path="/connect" element={<ConnectPage />} />
                 <Route path="/apps" element={<AppsPage />} />
                 <Route path="/audit" element={<AuditPage />} />
+                <Route path="/diff" element={<DiffPage />} />
                 <Route path="/roadmap" element={<RoadmapPage />} />
                 <Route path="*" element={<Navigate to="/connect" replace />} />
               </Routes>

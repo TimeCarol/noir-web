@@ -12,15 +12,15 @@ import { Card, Steps } from 'antd';
 const milestones = [
   { title: 'M0 连接', status: 'finish' as const, content: 'WebUSB, ADB, 设备, 包列表' },
   { title: 'M1 数据', status: 'finish' as const, content: '权限, 端点, Manifest' },
-  { title: 'M2 报告', status: 'process' as const, content: 'HTML, diff, 缓存' },
-  { title: 'M3 处置', status: 'wait' as const, content: 'appops, DeepScan' },
+  { title: 'M2 报告', status: 'finish' as const, content: 'HTML, diff, 缓存' },
+  { title: 'M3 处置', status: 'process' as const, content: 'appops, DeepScan' },
 ];
 
 /** RoadmapPage 用紧凑时间线表达实现边界 */
 export default function RoadmapPage() {
   return (
     <Card title="里程碑">
-      <Steps orientation="vertical" current={2} items={milestones} />
+      <Steps orientation="vertical" current={3} items={milestones} />
     </Card>
   );
 }

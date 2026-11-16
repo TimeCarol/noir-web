@@ -151,6 +151,7 @@ describe('AuditPage', () => {
     expect(screen.getByText('命中应用')).toBeInTheDocument();
     expect(screen.getByText('多个上报端点')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /JSON/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /HTML/ })).toBeInTheDocument();
     expect(scanState.scanPackages).toHaveBeenCalledWith(
       expect.objectContaining({ serial: 'SERIAL-1', packages }),
       expect.objectContaining({ minScore: 0, limit: 500 }),

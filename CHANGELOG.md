@@ -21,6 +21,10 @@
 - Device snapshot from `getprop`
 - Expanded connect-page device card with identifiers, network state, MAC addresses and USB debugging; empty fields stay hidden
 - System card with version, build, security, partition, runtime, kernel and graphics facts
+- Self-contained HTML report export
+- Plan export with appops and rollback commands
+- Report comparison page for two NOIR JSON files
+- OPFS AppFacts cache with APK path, size and mtime invalidation
 - Hide device and system cards until a device is connected
 - Detect physical WebUSB disconnect while idle on the connect page
 - Connecting no longer navigates directly to the apps page
