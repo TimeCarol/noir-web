@@ -13,7 +13,7 @@ const milestones = [
   { title: 'M0 连接', status: 'finish' as const, content: 'WebUSB, ADB, 设备, 包列表' },
   { title: 'M1 数据', status: 'finish' as const, content: '权限, 端点, Manifest' },
   { title: 'M2 报告', status: 'finish' as const, content: 'HTML, diff, 缓存' },
-  { title: 'M3 处置', status: 'process' as const, content: 'WASM, 验收, 部署' },
+  { title: 'M3 处置', status: 'process' as const, content: 'WASM, HTTPS 验收' },
 ];
 
 /** RoadmapPage 用紧凑时间线表达实现边界 */

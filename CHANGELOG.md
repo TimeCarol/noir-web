@@ -16,7 +16,6 @@
 - Real MI 6 dumpsys and AOSP AXML fixtures for parser and interruption tests
 - JSON, Markdown and CSV report export with NOIR-compatible `report.json`
 - GitHub Actions `verify` workflow for master pushes and pull requests
-
 - WebUSB to ADB connection with Tango, browser-generated RSA key and IndexedDB credential store
 - Device snapshot from `getprop`
 - Expanded connect-page device card with identifiers, network state, MAC addresses and USB debugging; empty fields stay hidden
@@ -52,6 +51,10 @@
 - Sidebar supports drag and keyboard resize, with persisted width and a rounded collapse control
 - Removed static explanatory copy from the connect, apps and roadmap pages
 - Empty device state uses placeholder rows instead of instruction text
+
+- Manual acceptance matrix for device, browser and deployment boundaries
+- HTTPS nginx config with HTTP redirect, TLS hardening, security headers and cache rules
+- `deploy/verify-https.sh` for certificate, redirect, header and asset checks
 
 ### Not yet
 

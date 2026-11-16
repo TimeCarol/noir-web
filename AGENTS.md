@@ -80,9 +80,9 @@
 
 ## 当前目标
 
-M1 已实现: Chrome / Edge 桌面版通过 WebUSB 连接一台已授权的 Android 设备, 读取设备属性, 扫描权限和端点, 解析 AXML, 计算风险, 生成建议和 JSON/Markdown/CSV 报告.
+M2/M3 已实现: WebUSB 连接, 设备与系统信息, 权限和端点扫描, AXML, 风险评分, JSON/Markdown/CSV/HTML 报告, 报告对比, plan, OPFS 缓存, appops 应用/回滚, DEX 字符串级 DeepScan, 真机/浏览器验收矩阵和 HTTPS 部署配置.
 
-M1 不包含: DeepScan, 报告 diff, HTML 导出, appops 写操作. 没实现的能力不能写成已可用.
+仍待执行: 可选 dex-decompiler WASM, 正式域名 HTTPS 验证, Windows WinUSB 和 Linux udev 矩阵. 没实现的能力不能写成已可用.
 
 未完成项以 [TODO.md](TODO.md) 为准, 变更记录写在 [CHANGELOG.md](CHANGELOG.md).
 
