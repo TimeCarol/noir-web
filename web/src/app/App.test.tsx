@@ -22,7 +22,7 @@ describe('App', () => {
     );
     expect(await screen.findByRole('heading', { name: '连接设备' })).toBeInTheDocument();
     expect(await screen.findByText('当前浏览器不支持 WebUSB')).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: '应用列表' }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /应用列表/ }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('link', { name: /隐私审计/ }).length).toBeGreaterThan(0);
     expect(document.documentElement.style.getPropertyValue('--brand-icon')).toContain('data:image/svg+xml');
   });

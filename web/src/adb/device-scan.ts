@@ -1,6 +1,6 @@
 /**
  * 职责: 在设备端批量提取 APK 端点与 Manifest, 并提供无 unzip 时的远程 ZIP 回退
- * 导出: DeviceToolAvailability, ScanUrlsResult, scanDeviceUrls, scanRemoteUrls, readPackagePaths
+ * 导出: DeviceToolAvailability, ScanUrlsResult, ApkStamp, scanDeviceUrls, scanRemoteUrls, readPackagePaths, readApkStamps
  * 依赖: adb/shell / apk/dex / apk/manifest / apk/remote-zip
  * 约束: 快路径只传输 URL 和 base64 Manifest, 不传输 APK 主体
  * 作者: timecarol
@@ -20,6 +20,13 @@ export interface DeviceToolAvailability {
   strings: boolean;
   base64: boolean;
   fast: boolean;
+}
+
+/** ScanUrlsResult 汇总端点, Manifest 和失败包 */
+/** ApkStamp 是用于 AppFacts 缓存失效的 APK 文件元数据 */
+export interface ApkStamp {
+  size: number;
+  mtime: number;
 }
 
 /** ScanUrlsResult 汇总端点, Manifest 和失败包 */
@@ -58,6 +65,32 @@ export async function readPackagePaths(shell: Shell, packageName: string, fallba
     if (isShellInterruption(error)) throw error;
     return [fallback];
   }
+}
+
+/** readApkStamps 批量读取候选 APK 的大小和 mtime
+ * @param shell 设备 shell
+ * @param targets 候选包和基础 APK 路径
+ * @returns 包名到文件元数据的映射, stat 不可用时为空
+ */
+export async function readApkStamps(shell: Shell, targets: readonly PackageEntry[]): Promise<Map<string, ApkStamp>> {
+  const stamps = new Map<string, ApkStamp>();
+  for (let start = 0; start < targets.length; start += 30) {
+    const batch = targets.slice(start, start + 30);
+    const command = batch
+      .map(target => `stat -c '%s %Y' ${quote(target.apkPath)} 2>/dev/null || echo '0 0'`)
+      .join('; ');
+    const output = await shell.text(command);
+    const lines = output.trim().split('\n');
+    batch.forEach((target, index) => {
+      const [sizeText, mtimeText] = (lines[index] ?? '').trim().split(/\s+/);
+      const size = Number.parseInt(sizeText, 10);
+      const mtime = Number.parseInt(mtimeText, 10);
+      if (Number.isFinite(size) && Number.isFinite(mtime) && size > 0 && mtime > 0) {
+        stamps.set(target.packageName, { size, mtime });
+      }
+    });
+  }
+  return stamps;
 }
 
 /** detectDeviceTools 检查设备上的 unzip, strings 和 base64 */

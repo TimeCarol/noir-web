@@ -201,7 +201,7 @@ export function reportCsv(result: ScanResult): string {
 }
 
 /** downloadName 生成带设备和时间的稳定文件名 */
-export function downloadName(result: ScanResult, extension: 'json' | 'md' | 'csv'): string {
+export function downloadName(result: ScanResult, extension: 'json' | 'md' | 'csv' | 'html' | 'txt'): string {
   const stamp = new Date(result.finishedAt).toISOString().replace(/[:.]/g, '-');
   const model = result.model.replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '') || 'android';
   return `noir-${model}-${stamp}.${extension}`;

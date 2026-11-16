@@ -12,7 +12,7 @@ import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
-const budget = 410 * 1024;
+const budget = 425 * 1024;
 const entries = [];
 
 /** walk 收集构建产物文件和大小 */

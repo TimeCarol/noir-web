@@ -248,7 +248,7 @@ function validate(item, metrics) {
   } else {
     assert.equal(metrics.sidebar?.display, 'none', `${item.label}: 移动布局仍显示侧栏`);
     assert.notEqual(metrics.mobileNav?.display, 'none', `${item.label}: 缺少移动导航`);
-    assert.ok(metrics.mobileLinks.length === 4, `${item.label}: 移动导航数量不是 4`);
+    assert.ok(metrics.mobileLinks.length === 5, `${item.label}: 移动导航数量不是 5`);
     assert.ok(metrics.mobileLinks.every(link => link.height >= 44 - 0.5), `${item.label}: 移动导航触控高度不足`);
     assert.ok(metrics.main.x <= 1, `${item.label}: 移动内容没有贴齐左侧`);
   }
