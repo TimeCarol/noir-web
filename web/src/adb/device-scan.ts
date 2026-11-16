@@ -12,7 +12,7 @@ import type { PackageEntry } from './types';
 import { isShellInterruption, type Shell } from './shell';
 import { quote, listZipEntries, readZipEntry } from '../apk/remote-zip';
 import { analyzeManifest, type ManifestFacts } from '../apk/manifest';
-import { DEX_SIGNAL_GREP, scanDex, signalsFromTokens, URL_LIMIT } from '../apk/dex';
+import { urlsFromDex, URL_LIMIT } from '../apk/dex';
 
 /** DeviceToolAvailability 记录设备端快路径所需工具 */
 export interface DeviceToolAvailability {
@@ -32,7 +32,6 @@ export interface ApkStamp {
 /** ScanUrlsResult 汇总端点, Manifest 和失败包 */
 export interface ScanUrlsResult {
   urls: Map<string, string[]>;
-  signals: Map<string, string[]>;
   manifests: Map<string, ManifestFacts>;
   failed: Set<string>;
 }
@@ -121,10 +120,9 @@ export async function scanDeviceUrls(
   callbacks: ScanCallbacks = {},
 ): Promise<ScanUrlsResult> {
   const urls = new Map<string, string[]>();
-  const signals = new Map<string, string[]>();
   const manifests = new Map<string, ManifestFacts>();
   const failed = new Set<string>();
-  if (targets.length === 0) return { urls, signals, manifests, failed };
+  if (targets.length === 0) return { urls, manifests, failed };
 
   const tools = await detectDeviceTools(shell);
   if (!tools.fast) {
@@ -157,9 +155,7 @@ export async function scanDeviceUrls(
         const found = separator < 0 ? '' : body.slice(separator + 1);
         if (!pkg) return;
         seen.add(pkg);
-        const tokens = found.split(/\s+/).filter(Boolean);
-        urls.set(pkg, tokens.filter(token => token.startsWith('http://') || token.startsWith('https://')).slice(0, URL_LIMIT));
-        signals.set(pkg, signalsFromTokens(tokens));
+        urls.set(pkg, found.split(/\s+/).filter(Boolean).slice(0, URL_LIMIT));
         return;
       }
       if (line.startsWith('F ')) {
@@ -188,7 +184,7 @@ export async function scanDeviceUrls(
     }
   }
 
-  return { urls, signals, manifests, failed };
+  return { urls, manifests, failed };
 }
 
 /** packageScript 生成单个包在设备端执行的 shell 片段 */
@@ -198,7 +194,7 @@ function packageScript(target: PackageEntry, base64: boolean): string {
   const manifestPart = base64
     ? `if [ "$first" = 1 ]; then m=$(unzip -p "$apk" AndroidManifest.xml 2>/dev/null | base64 | tr -d '\\n'); if [ -n "$m" ]; then echo "M ${pkg}|$m"; first=0; fi; fi;`
     : '';
-  return `p='${pkg}'; a=$(pm path "$p" 2>/dev/null | sed 's/^package://'); [ -z "$a" ] && a='${fallback}'; f=''; b=0; first=1; for apk in $a; do if ! unzip -l "$apk" >/dev/null 2>&1; then b=1; continue; fi; ${manifestPart} d=$(unzip -l "$apk" 2>/dev/null | sed -n 's/.* \\(classes[0-9]*\\.dex\\)[[:space:]]*$/\\1/p'); [ -z "$d" ] && d=classes.dex; u=$(unzip -p "$apk" $d 2>/dev/null | strings | grep -oE '${URL_CHARS}|${DEX_SIGNAL_GREP}' | sort -u | head -${URL_LIMIT + 128} | tr '\\n' ' '); [ -n "$u" ] && f="$f $u"; done; if [ "$b" = 1 ] && [ -z "$f" ]; then echo "F ${pkg}"; else echo "R ${pkg}|$f"; fi; echo "P ${pkg}"`;
+  return `p='${pkg}'; a=$(pm path "$p" 2>/dev/null | sed 's/^package://'); [ -z "$a" ] && a='${fallback}'; f=''; b=0; first=1; for apk in $a; do if ! unzip -l "$apk" >/dev/null 2>&1; then b=1; continue; fi; ${manifestPart} d=$(unzip -l "$apk" 2>/dev/null | sed -n 's/.* \\(classes[0-9]*\\.dex\\)[[:space:]]*$/\\1/p'); [ -z "$d" ] && d=classes.dex; u=$(unzip -p "$apk" $d 2>/dev/null | strings | grep -oE '${URL_CHARS}' | sort -u | head -${URL_LIMIT} | tr '\\n' ' '); [ -n "$u" ] && f="$f $u"; done; if [ "$b" = 1 ] && [ -z "$f" ]; then echo "F ${pkg}"; else echo "R ${pkg}|$f"; fi; echo "P ${pkg}"`;
 }
 
 /** decodeManifest 解码 base64 Manifest 并解析事实 */
@@ -225,7 +221,6 @@ export async function scanRemoteUrls(
   callbacks: ScanCallbacks = {},
 ): Promise<ScanUrlsResult> {
   const urls = new Map<string, string[]>();
-  const signals = new Map<string, string[]>();
   const manifests = new Map<string, ManifestFacts>();
   const failed = new Set<string>();
 
@@ -234,7 +229,6 @@ export async function scanRemoteUrls(
     const target = targets[index];
     const paths = await readPackagePaths(shell, target.packageName, target.apkPath);
     const found = new Set<string>();
-    const foundSignals = new Set<string>();
     let complete = true;
 
     for (const path of paths) {
@@ -261,9 +255,7 @@ export async function scanRemoteUrls(
             complete = false;
             continue;
           }
-          const dex = scanDex([bytes], URL_LIMIT);
-          for (const url of dex.urls) found.add(url);
-          for (const signal of dex.signals) foundSignals.add(signal);
+          for (const url of urlsFromDex([bytes], URL_LIMIT)) found.add(url);
         }
       } catch (error) {
         if (isShellInterruption(error)) throw error;
@@ -271,12 +263,10 @@ export async function scanRemoteUrls(
       }
     }
 
-    if (complete) {
-      urls.set(target.packageName, [...found]);
-      signals.set(target.packageName, [...foundSignals]);
-    } else failed.add(target.packageName);
+    if (complete) urls.set(target.packageName, [...found]);
+    else failed.add(target.packageName);
     callbacks.onProgress?.(index + 1, targets.length, target.packageName);
   }
 
-  return { urls, signals, manifests, failed };
+  return { urls, manifests, failed };
 }

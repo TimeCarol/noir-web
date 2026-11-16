@@ -1,6 +1,6 @@
 /**
  * 职责: 从 DEX 字节中提取 HTTP(S) 端点和静态风险信号
- * 导出: URL_LIMIT, DexScanResult, DEEP_SIGNALS, DEX_SIGNAL_GREP, scanDex, urlsFromDex, signalsFromTokens
+ * 导出: URL_LIMIT, DexScanResult, DEEP_SIGNALS, DEX_SIGNAL_TERMS, scanDex, urlsFromDex, signalsFromTokens
  * 依赖: 无
  * 约束: 只扫描可打印 ASCII 串, 信号是字符串证据而不是源码级结论
  * 作者: timecarol
@@ -44,8 +44,8 @@ export const DEEP_SIGNALS: readonly DeepSignal[] = [
   { key: 'device-admin', label: '设备管理', weight: 4, patterns: ['DeviceAdminReceiver'] },
 ] as const;
 
-/** DEX_SIGNAL_GREP 是设备端 grep -E 使用的合并模式 */
-export const DEX_SIGNAL_GREP = DEEP_SIGNALS.flatMap(signal => signal.patterns).join('|');
+/** DEX_SIGNAL_TERMS 是设备端 grep -F 使用的固定字符串列表 */
+export const DEX_SIGNAL_TERMS = DEEP_SIGNALS.flatMap(signal => signal.patterns);
 
 const URL_PATTERN = /https?:\/\/[A-Za-z0-9._~:/?#@!&()*+,;=%-]{4,300}/;
 const PRINTABLE_START = 32;
